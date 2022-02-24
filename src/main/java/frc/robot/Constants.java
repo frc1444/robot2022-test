@@ -4,12 +4,30 @@
 
 package frc.robot;
 
-/**
- * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
- * constants. This class should not be used for any other purpose. All constants should be declared
- * globally (i.e. public static). Do not put anything functional in this class.
- *
- * <p>It is advised to statically import this class (or one of its inner classes) wherever the
- * constants are needed, to reduce verbosity.
- */
-public final class Constants {}
+public final class Constants {
+    private Constants() { throw new UnsupportedOperationException(); }
+
+    public final class CanIds {
+        public int getPdhId() { return 1; }
+        public int getPhId() { return 2; }
+        public int getIntakeId() { return 3; }
+        public int getLeftSingulateId() { return 4; }
+        public int getRightSingulateId() { return 5; }
+        public int getLowerIndexId() { return 6; }
+        public int getUpperIndexId() { return 7; }
+        public int getShooterId() { return 8; }
+        public int getFirstStageLeftClimbId() { return 9; }
+        public int getFirstStageRightClimbId() { return 10; }
+        public int getSecondStageLeftClimbId() { return 11; }
+        public int getSecondStageRightClimbId() { return 12; }
+        public int getLeftDriveLeaderId() { return 13; }
+        public int getLeftDriveFollowerId() { return 14; }
+        public int getRightDriveLeaderId() { return 15; }
+        public int getRightDriveFollowerId() { return 16; }
+    }
+
+    public final class PneumaticPortIds {
+        public int getIntakeId() { return 0; }
+        public int getShifterId() { return 1; }
+    }
+}
