@@ -26,23 +26,17 @@ public class DriveSubsystem extends SubsystemBase {
         rightFollower.follow(rightDrive, FollowerType.PercentOutput);
         rightFollower.setInverted(TalonFXInvertType.FollowMaster); // same direction as master
 
-        for (TalonFX talonFX : new TalonFX[] { leftDrive, rightDrive , leftFollower, rightFollower}) {
+        for (TalonFX talonFX : new TalonFX[] { leftDrive, rightDrive, leftFollower, rightFollower}) {
             talonFX.configFactoryDefault();
             talonFX.setNeutralMode(NeutralMode.Brake);
 
-            // So we tuned our swerve drive in like 2018, then moved from CIM to Falcons, so this just lets us
-            //   use the PID we tuned using the CIMs
-            double ratio = Constants.CIMCODER_COUNTS_PER_REVOLUTION / Constants.FALCON_ENCODER_COUNTS_PER_REVOLUTION;
-            talonFX.config_kP(Constants.SLOT_INDEX, 1.5 * ratio);
-            talonFX.config_kF(Constants.SLOT_INDEX, 1.0 * ratio);
+            talonFX.config_kP(Constants.SLOT_INDEX, 0.06);
+            talonFX.config_kF(Constants.SLOT_INDEX, 0.04);
             talonFX.configClosedloopRamp(.40);
+            talonFX.configOpenloopRamp(.40);
         }
 
         rightDrive.setInverted(TalonFXInvertType.Clockwise);
-
-        // We could consider using WPI_TalonFX along with the DifferentialDrive class later,
-        //   but keep in mind we really want to make sure that we use the velocity control. By default
-        //   DifferentialDrive does not use velocity control
     }
 
     private double rpmToVelocity(double rpm) {

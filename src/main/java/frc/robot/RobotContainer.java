@@ -8,9 +8,13 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.DefaultDrive;
+import frc.robot.commands.OperatorCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -21,7 +25,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DriveSubsystem _driveSubsystem = new DriveSubsystem();
-    private final RobotInput robotInput = new RobotInput(new PS4Controller(Constants.Controller.PORT_PS4));
+    private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+    private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+    private final RobotInput robotInput = new RobotInput(
+            new PS4Controller(Constants.Controller.PORT_PS4),
+            new GenericHID(Constants.Controller.PORT_EXTREME)
+    );
 
     // A chooser for autonomous commands
     private final SendableChooser<Command> _autoChooser = new SendableChooser<>();
@@ -34,7 +43,8 @@ public class RobotContainer {
         configureButtonBindings();
 
         Command driveCommand = new DefaultDrive(_driveSubsystem, robotInput);
-        teleopCommand = new ParallelCommandGroup(driveCommand); // TODO add operator command here
+        Command operatorCommand = new OperatorCommand(intakeSubsystem, shooterSubsystem, robotInput);
+        teleopCommand = new ParallelCommandGroup(driveCommand, operatorCommand);
     }
 
   /**

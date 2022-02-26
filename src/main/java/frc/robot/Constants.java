@@ -20,25 +20,23 @@ public final class Constants {
 
 
     public static final class CanIds {
+        // Note that as of writing this comment (2022.02.26) only the drive leaders and followers have been programmed
+
         public int getPdhId() { return 1; }
         public int getPhId() { return 2; }
-        public int getIntakeId() { return 3; }
-        public int getLeftSingulateId() { return 4; }
-        public int getRightSingulateId() { return 5; }
-        public int getLowerIndexId() { return 6; }
-        public int getUpperIndexId() { return 7; }
-        public int getShooterId() { return 8; }
+        public static int INTAKE = 3;
+        public static int SINGULATE_LEFT = 4;
+        public static int SINGULATE_RIGHT = 5;
+        public static int INDEX_LOWER = 6;
+        public static int INDEX_UPPER = 7;
+        public static int SHOOTER = 8;
         public int getFirstStageLeftClimbId() { return 9; }
         public int getFirstStageRightClimbId() { return 10; }
         public int getSecondStageLeftClimbId() { return 11; }
         public int getSecondStageRightClimbId() { return 12; }
-//        public int getLeftDriveLeaderId() { return 13; }
         public static int LEFT_DRIVE_LEADER = 13;
-//        public int getLeftDriveFollowerId() { return 14; }
         public static int LEFT_DRIVE_FOLLOWER = 14;
-        public int getRightDriveLeaderId() { return 15; }
         public static int RIGHT_DRIVE_LEADER = 15;
-        public int getRightDriveFollowerId() { return 16; }
         public static int RIGHT_DRIVE_FOLLOWER = 16;
     }
 
@@ -48,5 +46,16 @@ public final class Constants {
     }
     public static final class Controller {
         public static final int PORT_PS4 = 0;
+        public static final int PORT_EXTREME = 1;
+    }
+
+    /**
+     * Button mappings for an Extreme 3D Pro Joystick
+     */
+    public static final class ControllerExtreme {
+        public static int POV = 0;
+
+        public static int GRID_MIDDLE_LEFT = 8;
+        public static int GRID_MIDDLE_RIGHT = 9;
     }
 }
