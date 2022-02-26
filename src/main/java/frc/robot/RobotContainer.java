@@ -5,8 +5,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,23 +19,27 @@ import edu.wpi.first.wpilibj2.command.Command;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final DriveSubsystem _driveSubsystem = new DriveSubsystem();
+    // The robot's subsystems and commands are defined here...
+    private final DriveSubsystem _driveSubsystem = new DriveSubsystem();
+    private final RobotInput robotInput = new RobotInput(new PS4Controller(Constants.Controller.PORT_PS4));
 
     // A chooser for autonomous commands
-    SendableChooser<Command> _autoChooser = new SendableChooser<>();
+    private final SendableChooser<Command> _autoChooser = new SendableChooser<>();
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    // Configure the button bindings
-    configureButtonBindings();
-  }
+    private final Command teleopCommand;
+
+    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    public RobotContainer() {
+        // Configure the button bindings
+        configureButtonBindings();
+
+        Command driveCommand = new DefaultDrive(_driveSubsystem, robotInput);
+        teleopCommand = new ParallelCommandGroup(driveCommand); // TODO add operator command here
+    }
 
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   * instantiating a {@link GenericHID} or one of its subclasses
    */
   private void configureButtonBindings() {}
 
@@ -46,5 +51,8 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     return _autoChooser.getSelected();
+  }
+  public Command getTeleopCommand() {
+      return teleopCommand;
   }
 }
