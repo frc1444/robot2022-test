@@ -18,22 +18,41 @@ public final class Constants {
     /** A constant needed for some CTRE methods that should just stay 0 */
     public static final int SLOT_INDEX = 0;
 
+    /** Polynomial curve to apply to drive inputs - a value great than 1 will make the input less sensitive with small inputs
+     *  i.e. smoother control when moving slowly
+    */
+    public static final int FORWARD_INPUT_CURVE = 2;
+    public static final int ROTATE_INPUT_CURVE = 1;
+
+    /** Deadzone for drive controllers */
+    public static final double DRIVE_JOYSTICK_DEADZONE = 0.05;
+
+    public static final class IntakeControl {
+        public static double STOP = 0.0;
+        public static double INTAKE_INTAKE = 1;
+        public static double INTAKE_EJECT = -1;
+        public static double SINGULATE_INTAKE = 1;
+        public static double SINGULATE_EJECT = -1;
+        public static double UPPER_INDEX_INTAKE = 1;
+        public static double UPPER_INDEX_EJECT = -1;
+        public static double LOWER_INDEX_INTAKE = 1;
+        public static double LOWER_INDEX_EJECT = -1;
+    }
 
     public static final class CanIds {
-        // Note that as of writing this comment (2022.02.26) only the drive leaders and followers have been programmed
 
-        public int getPdhId() { return 1; }
-        public int getPhId() { return 2; }
+        public static int POWER_DIST_HUB = 1;
+        public static int PNEUMATIC_HUB = 2;
         public static int INTAKE = 3;
         public static int SINGULATE_LEFT = 4;
         public static int SINGULATE_RIGHT = 5;
         public static int INDEX_LOWER = 6;
         public static int INDEX_UPPER = 7;
         public static int SHOOTER = 8;
-        public int getFirstStageLeftClimbId() { return 9; }
-        public int getFirstStageRightClimbId() { return 10; }
-        public int getSecondStageLeftClimbId() { return 11; }
-        public int getSecondStageRightClimbId() { return 12; }
+        public static int FIRST_STAGE_LEFT_CLIMB = 9;
+        public static int FIRST_STAGE_RIGHT_CLIMB = 10;
+        public static int SECOND_STAGE_LEFT_CLIMB = 11;
+        public static int SECOND_STAGE_RIGHT_CLIMB = 12;
         public static int LEFT_DRIVE_LEADER = 13;
         public static int LEFT_DRIVE_FOLLOWER = 14;
         public static int RIGHT_DRIVE_LEADER = 15;
@@ -41,12 +60,18 @@ public final class Constants {
     }
 
     public static final class PneumaticPortIds {
-        public int getIntakeId() { return 0; }
-        public int getShifterId() { return 1; }
+        public static int INTAKE = 0;
+        public static int SHIFTER = 1;
+        public static int SHOOTER_HOOD = 2;
     }
     public static final class Controller {
         public static final int PORT_PS4 = 0;
         public static final int PORT_EXTREME = 1;
+    }
+
+    public static final class DigitalIO {
+        public static final int LOWER_BALL_SENSOR = 0;
+        public static final int UPPER_BALL_SENSOR = 1;
     }
 
     /**

@@ -5,9 +5,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.DefaultDrive;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -16,14 +16,14 @@ import frc.robot.commands.DefaultDrive;
  * project.
  */
 public class Robot extends TimedRobot {
-    private Command m_autonomousCommand;
+    private Command _autonomousCommand;
 
-    private final RobotContainer m_robotContainer;
+    private final RobotContainer _robotContainer;
 
     public Robot() {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
-        m_robotContainer = new RobotContainer();
+        _robotContainer = new RobotContainer();
     }
 
     /**
@@ -45,17 +45,17 @@ public class Robot extends TimedRobot {
     /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
     @Override
     public void autonomousInit() {
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        _autonomousCommand = _robotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)
-        if (m_autonomousCommand != null) {
-          m_autonomousCommand.schedule();
+        if (_autonomousCommand != null) {
+          _autonomousCommand.schedule();
         }
     }
     @Override
     public void autonomousExit() {
-        if (m_autonomousCommand != null) {
-            m_autonomousCommand.cancel();
+        if (_autonomousCommand != null) {
+            _autonomousCommand.cancel();
         }
     }
 
@@ -65,17 +65,15 @@ public class Robot extends TimedRobot {
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
         // this line or comment it out.
-        m_robotContainer.getTeleopCommand().schedule();
+        if (_autonomousCommand != null) {
+            _autonomousCommand.cancel();
+        }
     }
 
     /** This function is called periodically during operator control. */
     @Override
-    public void teleopPeriodic() {}
-
-    @Override
-    public void teleopExit() {
-        super.teleopExit();
-        m_robotContainer.getTeleopCommand().cancel();
+    public void teleopPeriodic() {
+        SmartDashboard.putNumber("Ball Count", _robotContainer.getBallCount());
     }
 
     @Override

@@ -2,43 +2,65 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class RobotInput {
-    private static final double JOYSTICK_DEADZONE = 0.05;
-    private final PS4Controller ps4Controller;
-    private final GenericHID extremeController;
+
+    private final PS4Controller _ps4Controller;
+    private final GenericHID _extremeController;
 
     public RobotInput(PS4Controller ps4Controller, GenericHID extremeController) {
-        this.ps4Controller = ps4Controller;
-        this.extremeController = extremeController;
+        _ps4Controller = ps4Controller;
+        _extremeController = extremeController;
+    }
+
+    public JoystickButton getIntakeButton() {
+        return new JoystickButton(_ps4Controller, PS4Controller.Button.kTriangle.value);
+    }
+
+    public JoystickButton getEjectButton() {
+        return new JoystickButton(_ps4Controller, PS4Controller.Button.kCircle.value);
+    }
+
+    public JoystickButton getEjectLowerButton() {
+        return new JoystickButton(_ps4Controller, PS4Controller.Button.kCross.value);
+    }
+
+    public JoystickButton getShootLowButton() {
+        return new JoystickButton(_ps4Controller, PS4Controller.Button.kSquare.value);
+    }
+
+    public JoystickButton getFeedButton() {
+        return new JoystickButton(_ps4Controller, PS4Controller.Button.kR1.value);
     }
 
     public double getForward() {
-        if (!ps4Controller.isConnected()) {
+        if (!_ps4Controller.isConnected()) {
             return 0.0;
         }
-        double raw = -ps4Controller.getLeftY();
-        if (Math.abs(raw) < JOYSTICK_DEADZONE) {
+        double raw = -_ps4Controller.getLeftY();
+        if (Math.abs(raw) < Constants.DRIVE_JOYSTICK_DEADZONE) {
             return 0.0;
         }
-        return raw;
+
+        return applyInputCurve(raw, Constants.FORWARD_INPUT_CURVE);
     }
     public double getSteer() {
-        if (!ps4Controller.isConnected()) {
+        if (!_ps4Controller.isConnected()) {
             return 0.0;
         }
-        double raw = ps4Controller.getRightX();
-        if (Math.abs(raw) < JOYSTICK_DEADZONE) {
+        double raw = _ps4Controller.getRightX();
+        if (Math.abs(raw) < Constants.DRIVE_JOYSTICK_DEADZONE) {
             return 0.0;
         }
-        return raw;
+        return applyInputCurve(raw, Constants.ROTATE_INPUT_CURVE);
     }
 
     public double getIntakeSpeed() {
-        if (!extremeController.isConnected()) {
+        if (!_extremeController.isConnected()) {
             return 0.0;
         }
-        int pov = extremeController.getPOV(Constants.ControllerExtreme.POV);
+        int pov = _extremeController.getPOV(Constants.ControllerExtreme.POV);
         if (pov == -1) {
             return 0.0;
         }
@@ -67,9 +89,25 @@ public class RobotInput {
 
 
     private boolean isGridMiddleLeft() {
-        return extremeController.isConnected() && extremeController.getRawButton(Constants.ControllerExtreme.GRID_MIDDLE_LEFT);
+        return _extremeController.isConnected() && _extremeController.getRawButton(Constants.ControllerExtreme.GRID_MIDDLE_LEFT);
     }
     private boolean isGridMiddleRight() {
-        return extremeController.isConnected() && extremeController.getRawButton(Constants.ControllerExtreme.GRID_MIDDLE_RIGHT);
+        return _extremeController.isConnected() && _extremeController.getRawButton(Constants.ControllerExtreme.GRID_MIDDLE_RIGHT);
+    }
+
+    /**
+     * Apply polynomial curve to input. This can be used to make controls more sensitive at lower speeds
+     * @param raw The raw input to be modified
+     * @param power Power of the polynomial to be applied.
+     * @return The modified input
+     */
+    private double applyInputCurve(double raw, double power) {
+
+        // Avoid taking the input to a negative or zero power
+        if (power <= 0) {
+            power = 1;
+        }
+
+        return Math.signum(raw) * Math.pow(Math.abs(raw), power);
     }
 }

@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.FalconVelocityConverter;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -28,23 +29,16 @@ public class DriveSubsystem extends SubsystemBase {
 
         for (TalonFX talonFX : new TalonFX[] { leftDrive, rightDrive, leftFollower, rightFollower}) {
             talonFX.configFactoryDefault();
-            talonFX.setNeutralMode(NeutralMode.Brake);
+            talonFX.setNeutralMode(NeutralMode.Coast);
 
             talonFX.config_kP(Constants.SLOT_INDEX, 0.06);
             talonFX.config_kF(Constants.SLOT_INDEX, 0.04);
             talonFX.configClosedloopRamp(.40);
             talonFX.configOpenloopRamp(.40);
+            //talonFX.configNeutralDeadband(0.04);    // in case we don't want to use the manual deadband in RobotInput
         }
 
         rightDrive.setInverted(TalonFXInvertType.Clockwise);
-    }
-
-    private double rpmToVelocity(double rpm) {
-        return rpm * Constants.FALCON_ENCODER_COUNTS_PER_REVOLUTION / Constants.CTRE_UNIT_CONVERSION; // maybe we might want to make falcons faster (they can go faster)
-    }
-    private double percentToVelocity(double percent) {
-        // TODO We probably will never get to MAX_FALCON RPM, so we could consider lowering that value
-        return rpmToVelocity(percent * Constants.MAX_FALCON_RPM);
     }
 
     /**
@@ -61,12 +55,12 @@ public class DriveSubsystem extends SubsystemBase {
          if (speeds.left == 0.0) {
              leftDrive.neutralOutput();
          } else {
-             leftDrive.set(TalonFXControlMode.Velocity, percentToVelocity(speeds.left));
+             leftDrive.set(TalonFXControlMode.Velocity, FalconVelocityConverter.percentToVelocity(speeds.left));
          }
          if (speeds.right == 0.0) {
              rightDrive.neutralOutput();
          } else {
-             rightDrive.set(TalonFXControlMode.Velocity, percentToVelocity(speeds.right));
+             rightDrive.set(TalonFXControlMode.Velocity, FalconVelocityConverter.percentToVelocity(speeds.right));
          }
 
     }

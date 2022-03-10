@@ -1,0 +1,20 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/DriveSubsystem": "Subsystem",
+      "/LiveWindow/IntakeSubsystem": "Subsystem",
+      "/LiveWindow/ShooterSubsystem": "Subsystem",
+      "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[1]": "Digital Input",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler"
+    },
+    "windows": {
+      "/LiveWindow/IntakeSubsystem": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  }
+}

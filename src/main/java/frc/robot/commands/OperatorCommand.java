@@ -7,23 +7,28 @@ import frc.robot.subsystems.ShooterSubsystem;
 
 public class OperatorCommand extends CommandBase {
 
-    private final IntakeSubsystem intakeSubsystem;
-    private final ShooterSubsystem shooterSubsystem;
-    private final RobotInput robotInput;
+    private final IntakeSubsystem _intake;
+    private final ShooterSubsystem _shooter;
+    private final RobotInput _robotInput;
 
     public OperatorCommand(IntakeSubsystem intakeSubsystem, ShooterSubsystem shooterSubsystem, RobotInput robotInput) {
-        this.intakeSubsystem = intakeSubsystem;
-        this.shooterSubsystem = shooterSubsystem;
-        this.robotInput = robotInput;
+        _intake = intakeSubsystem;
+        _shooter = shooterSubsystem;
+        _robotInput = robotInput;
+
+        addRequirements(
+            _intake,
+            _shooter
+        );
     }
 
     @Override
     public void execute() {
-        intakeSubsystem.update(robotInput.getIntakeSpeed(), robotInput.getManualIndexerSpeed());
+        //_intake.update(_robotInput.getIntakeSpeed(), _robotInput.getManualIndexerSpeed());
     }
 
     @Override
     public void end(boolean interrupted) {
-        intakeSubsystem.update(0.0, 0.0);
+        _intake.stop();
     }
 }
