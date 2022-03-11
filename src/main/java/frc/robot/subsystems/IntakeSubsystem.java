@@ -134,10 +134,10 @@ public class IntakeSubsystem extends SubsystemBase {
      * in order to keep a ball loaded in the shooter.
      */
     public void stop(boolean keepStopped) {
-        _intake.set(IntakeControl.STOP);
-        _singulateLeft.set(IntakeControl.STOP);
-        _indexLower.set(IntakeControl.STOP);
-        _indexUpper.set(IntakeControl.STOP);
+        _intake.set(IntakeControl.Stop);
+        _singulateLeft.set(IntakeControl.Stop);
+        _indexLower.set(IntakeControl.Stop);
+        _indexUpper.set(IntakeControl.Stop);
 
         _currentState = keepStopped ? IntakeStates.Stop : IntakeStates.Idle;
     }
@@ -165,20 +165,20 @@ public class IntakeSubsystem extends SubsystemBase {
      * Reverses all motors to remove all balls from system
      */
     private void ejectAll() { 
-        _intake.set(IntakeControl.INTAKE_EJECT);
-        _singulateLeft.set(IntakeControl.SINGULATE_EJECT);
-        _indexLower.set(IntakeControl.LOWER_INDEX_EJECT);
-        _indexUpper.set(IntakeControl.UPPER_INDEX_EJECT);
+        _intake.set(IntakeControl.Intake_Eject);
+        _singulateLeft.set(IntakeControl.Singulate_Eject);
+        _indexLower.set(IntakeControl.Lower_Index_Eject);
+        _indexUpper.set(IntakeControl.Upper_Index_Eject);
     }
 
     /**
      * Reverse all motors except upper indexer. This could be used to remove a ball of the wrong color
      */
     private void ejectLower() {
-        _intake.set(IntakeControl.INTAKE_EJECT);
-        _singulateLeft.set(IntakeControl.SINGULATE_EJECT);
-        _indexLower.set(IntakeControl.LOWER_INDEX_EJECT);
-        _indexUpper.set(IntakeControl.STOP);
+        _intake.set(IntakeControl.Intake_Eject);
+        _singulateLeft.set(IntakeControl.Singulate_Eject);
+        _indexLower.set(IntakeControl.Lower_Index_Eject);
+        _indexUpper.set(IntakeControl.Stop);
     }
 
     /**
@@ -197,10 +197,10 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         // If there is a ball in the upper index, but nowhere else, stop the upper indexer and keep running everything else
         else if (!_currentLowerSensorState && _currentUpperSensorState) {
-            _intake.set(IntakeControl.INTAKE_INTAKE);
-            _singulateLeft.set(IntakeControl.SINGULATE_INTAKE);
-            _indexLower.set(IntakeControl.LOWER_INDEX_INTAKE);
-            _indexUpper.set(IntakeControl.STOP);
+            _intake.set(IntakeControl.Intake_Intake);
+            _singulateLeft.set(IntakeControl.Singulate_Intake);
+            _indexLower.set(IntakeControl.Lower_Index_Intake);
+            _indexUpper.set(IntakeControl.Stop);
         }
         // In all other scenarios, run all the intake motors
         else {
@@ -214,9 +214,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void feed() {
         if (_previousUpperSensorState == _currentUpperSensorState) {
-            _indexUpper.set(IntakeControl.UPPER_INDEX_INTAKE);
+            _indexUpper.set(IntakeControl.Upper_Index_Intake);
         } else {
-            _indexUpper.set(IntakeControl.STOP);
+            _indexUpper.set(IntakeControl.Stop);
             
             if (_ballCount > 0) {
                 _ballCount -= 1;
@@ -228,10 +228,10 @@ public class IntakeSubsystem extends SubsystemBase {
      * Runs all motors in the intake direction.
      */
     private void intakeAll() {
-        _intake.set(IntakeControl.INTAKE_INTAKE);
-        _singulateLeft.set(IntakeControl.SINGULATE_INTAKE);
-        _indexLower.set(IntakeControl.LOWER_INDEX_INTAKE);
-        _indexUpper.set(IntakeControl.UPPER_INDEX_INTAKE);
+        _intake.set(IntakeControl.Intake_Intake);
+        _singulateLeft.set(IntakeControl.Singulate_Intake);
+        _indexLower.set(IntakeControl.Lower_Index_Intake);
+        _indexUpper.set(IntakeControl.Upper_Index_Intake);
     }
 
     /**
@@ -239,8 +239,8 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     private void moveBallUp() {
         if (_ballCount > 0 && !upperBallPresent()) {
-            _indexLower.set(IntakeControl.LOWER_INDEX_INTAKE);
-            _indexUpper.set(IntakeControl.UPPER_INDEX_INTAKE);
+            _indexLower.set(IntakeControl.Lower_Index_Intake);
+            _indexUpper.set(IntakeControl.Upper_Index_Intake);
         }
         else {
             this.stop(false);
