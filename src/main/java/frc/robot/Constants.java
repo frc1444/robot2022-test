@@ -27,18 +27,6 @@ public final class Constants {
     /** Deadzone for drive controllers */
     public static final double DRIVE_JOYSTICK_DEADZONE = 0.05;
 
-    public static final class IntakeControl {
-        public static double STOP = 0.0;
-        public static double INTAKE_INTAKE = 1;
-        public static double INTAKE_EJECT = -1;
-        public static double SINGULATE_INTAKE = 1;
-        public static double SINGULATE_EJECT = -1;
-        public static double UPPER_INDEX_INTAKE = 1;
-        public static double UPPER_INDEX_EJECT = -1;
-        public static double LOWER_INDEX_INTAKE = 1;
-        public static double LOWER_INDEX_EJECT = -1;
-    }
-
     public static final class CanIds {
 
         public static int POWER_DIST_HUB = 1;
