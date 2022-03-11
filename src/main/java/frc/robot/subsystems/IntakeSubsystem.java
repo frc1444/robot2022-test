@@ -24,6 +24,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private boolean _currentUpperSensorState;
 
     private IntakeStates _currentState;
+    private boolean _intakeRaised;
 
     // TODO pneumatics stuff for raising and lowering intake
 
@@ -56,13 +57,15 @@ public class IntakeSubsystem extends SubsystemBase {
             spark.setOpenLoopRampRate(0.3);
         }
 
-        // Start with no balls
+        // Start with no balls and intake raised
+        // TODO ball count may need to be set dynamically based on auton mode
         _ballCount = 0;
         _previousLowerSensorState = false;
         _previousUpperSensorState = false;
         _currentLowerSensorState = false;
         _currentUpperSensorState = false;
-        _currentState = IntakeStates.Stop;
+        _currentState = IntakeStates.Idle;
+        _intakeRaised = true;
     }
 
     @Override
@@ -83,8 +86,9 @@ public class IntakeSubsystem extends SubsystemBase {
             case Idle:
                 this.moveBallUp();
             break;
+
             case Stop:
-                this.stop();
+                this.stop(true);
             break;
 
             case Intake:
@@ -106,15 +110,42 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     /**
-     * Stop all motion on the intake subsystem
+     * Lower the intake mechanism but don't start the motors
      */
-    public void stop() {
+    public void lowerIntake() {
+        _intakeRaised = false;
+        // TODO actually lower the intake
+        _currentState = IntakeStates.Idle;
+    }
+
+    /**
+     * Raise the intake mechanism and stop all motion
+     */
+    public void raiseIntake() { 
+        this.stop(false);
+        // TODO actually raise the intake
+        _intakeRaised = true;
+    }
+
+    /**
+     * Stop all motion on the intake subsystem
+     * @param keepStopped If true, intake state will be set to Stop and no motion will occur until operator gives another input.
+     * If false, all motors will stop momentarily, but state will be set to Idle in which the upper indexer may continue to move
+     * in order to keep a ball loaded in the shooter.
+     */
+    public void stop(boolean keepStopped) {
         _intake.set(Constants.IntakeControl.STOP);
         _singulateLeft.set(Constants.IntakeControl.STOP);
         _indexLower.set(Constants.IntakeControl.STOP);
         _indexUpper.set(Constants.IntakeControl.STOP);
+
+        _currentState = keepStopped ? IntakeStates.Stop : IntakeStates.Idle;
     }
 
+    /**
+     * Set the intake to eject balls
+     * @param ejectAll If true, all intake, singulate, and index motors will eject. If false, only the lower intake and singulate motors will eject
+     */
     public void eject(boolean ejectAll) {
         if (ejectAll) {
             this.ejectAll();
@@ -155,9 +186,14 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public void intake() {
 
+        // If the intake is up and the operator wants to intake, lower the intake first
+        if (_intakeRaised) {
+            this.lowerIntake();
+        }
+
         // If there are balls in both the upper and lower indexers, stop everything
         if (_currentLowerSensorState && _currentUpperSensorState) {
-            this.stop();
+            this.stop(false);
         }
         // If there is a ball in the upper index, but nowhere else, stop the upper indexer and keep running everything else
         else if (!_currentLowerSensorState && _currentUpperSensorState) {
@@ -201,13 +237,13 @@ public class IntakeSubsystem extends SubsystemBase {
     /**
      * If the upper indexer is empty and the lower index has a ball, move the ball to the upper indexer
      */
-    public void moveBallUp() {
+    private void moveBallUp() {
         if (_ballCount > 0 && !upperBallPresent()) {
             _indexLower.set(Constants.IntakeControl.LOWER_INDEX_INTAKE);
             _indexUpper.set(Constants.IntakeControl.UPPER_INDEX_INTAKE);
         }
         else {
-            this.stop();
+            this.stop(false);
         }
     }
 

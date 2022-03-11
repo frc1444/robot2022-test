@@ -9,12 +9,10 @@ import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.IntakeStates;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.DefaultIntake;
 import frc.robot.commands.ShootLow;
 
 /**
@@ -44,8 +42,13 @@ public class RobotContainer {
    */
   public RobotContainer() {
 
-    _driveSubsystem.setDefaultCommand(new DefaultDrive(_driveSubsystem, _robotInput));
-    _intakeSubsystem.setDefaultCommand(new DefaultIntake(_intakeSubsystem));
+    _driveSubsystem.setDefaultCommand(
+      new RunCommand(() -> _driveSubsystem.arcadeDrive(_robotInput.getForward(), _robotInput.getSteer())
+      , _driveSubsystem));
+
+    _intakeSubsystem.setDefaultCommand(
+      new RunCommand(() -> _intakeSubsystem.update()
+      , _intakeSubsystem));
 
     SmartDashboard.putData(_intakeSubsystem);
     SmartDashboard.putData(_shooterSubsystem);
@@ -60,15 +63,20 @@ public class RobotContainer {
    * instantiating a {@link GenericHID} or one of its subclasses
    */
   private void configureButtonBindings() {
-    final var intakeButton = _robotInput.getIntakeButton();
-    final var ejectButton = _robotInput.getEjectButton();
-    final var ejectLowerButton = _robotInput.getEjectLowerButton();
-    final var shootLowButton = _robotInput.getShootLowButton();
 
-    intakeButton.whenPressed(() -> _intakeSubsystem.setState(IntakeStates.Intake));
-    ejectButton.whenPressed(() -> _intakeSubsystem.setState(IntakeStates.Eject));
-    ejectLowerButton.whenPressed(() -> _intakeSubsystem.setState(IntakeStates.EjectLower));
-    shootLowButton.whenPressed(new ShootLow(_shooterSubsystem, _intakeSubsystem));
+    final var intakeTrigger = _robotInput.getIntakeButton();
+    final var ejectTrigger = _robotInput.getEjectButton();
+    final var ejectLowerTrigger = _robotInput.getEjectLowerButton();
+    final var shootLowTrigger = _robotInput.getShootLowButton();
+    final var raiseIntakeTrigger = _robotInput.getRaiseIntake();
+    final var lowerIntakeTrigger = _robotInput.getLowerIntake();
+
+    intakeTrigger.whenActive(() -> _intakeSubsystem.intake());
+    ejectTrigger.whenActive(() -> _intakeSubsystem.eject(true));
+    ejectLowerTrigger.whenActive(() -> _intakeSubsystem.eject(false));
+    shootLowTrigger.whenActive(new ShootLow(_shooterSubsystem, _intakeSubsystem));
+    raiseIntakeTrigger.whenActive(() -> _intakeSubsystem.raiseIntake());
+    lowerIntakeTrigger.whenActive(() -> _intakeSubsystem.lowerIntake());
   }
 
   /**

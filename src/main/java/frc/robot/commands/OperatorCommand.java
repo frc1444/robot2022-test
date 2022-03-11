@@ -29,6 +29,6 @@ public class OperatorCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        _intake.stop();
+        _intake.stop(false);
     }
 }
