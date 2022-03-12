@@ -5,6 +5,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -12,22 +15,26 @@ import frc.robot.util.FalconVelocityConverter;
 
 public class DriveSubsystem extends SubsystemBase {
 
-    private final TalonFX leftDrive;
-    private final TalonFX rightDrive;
+    private final TalonFX _leftDrive;
+    private final TalonFX _rightDrive;
+    private final DoubleSolenoid _shiftSolenoid;
 
     public DriveSubsystem() {
-        leftDrive = new TalonFX(Constants.CanIds.LEFT_DRIVE_LEADER);
-        rightDrive = new TalonFX(Constants.CanIds.RIGHT_DRIVE_LEADER);
+        _leftDrive = new TalonFX(Constants.CanIds.LEFT_DRIVE_LEADER);
+        _rightDrive = new TalonFX(Constants.CanIds.RIGHT_DRIVE_LEADER);
+        _shiftSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
+            Constants.PneumaticPortIds.SHIFTER_FWD,
+            Constants.PneumaticPortIds.SHIFTER_REV);
 
         TalonFX leftFollower = new TalonFX(Constants.CanIds.LEFT_DRIVE_FOLLOWER);
-        leftFollower.follow(leftDrive, FollowerType.PercentOutput);
+        leftFollower.follow(_leftDrive, FollowerType.PercentOutput);
         leftFollower.setInverted(TalonFXInvertType.FollowMaster); // same direction as master
 
         TalonFX rightFollower = new TalonFX(Constants.CanIds.RIGHT_DRIVE_FOLLOWER);
-        rightFollower.follow(rightDrive, FollowerType.PercentOutput);
+        rightFollower.follow(_rightDrive, FollowerType.PercentOutput);
         rightFollower.setInverted(TalonFXInvertType.FollowMaster); // same direction as master
 
-        for (TalonFX talonFX : new TalonFX[] { leftDrive, rightDrive, leftFollower, rightFollower}) {
+        for (TalonFX talonFX : new TalonFX[] { _leftDrive, _rightDrive, leftFollower, rightFollower}) {
             talonFX.configFactoryDefault();
             talonFX.setNeutralMode(NeutralMode.Coast);
 
@@ -38,7 +45,7 @@ public class DriveSubsystem extends SubsystemBase {
             //talonFX.configNeutralDeadband(0.04);    // in case we don't want to use the manual deadband in RobotInput
         }
 
-        rightDrive.setInverted(TalonFXInvertType.Clockwise);
+        _rightDrive.setInverted(TalonFXInvertType.Clockwise);
     }
 
     /**
@@ -53,15 +60,22 @@ public class DriveSubsystem extends SubsystemBase {
          DifferentialDrive.WheelSpeeds speeds = DifferentialDrive.curvatureDriveIK(fwd, rot, true);
 
          if (speeds.left == 0.0) {
-             leftDrive.neutralOutput();
+             _leftDrive.neutralOutput();
          } else {
-             leftDrive.set(TalonFXControlMode.Velocity, FalconVelocityConverter.percentToVelocity(speeds.left));
+             _leftDrive.set(TalonFXControlMode.Velocity, FalconVelocityConverter.percentToVelocity(speeds.left));
          }
          if (speeds.right == 0.0) {
-             rightDrive.neutralOutput();
+             _rightDrive.neutralOutput();
          } else {
-             rightDrive.set(TalonFXControlMode.Velocity, FalconVelocityConverter.percentToVelocity(speeds.right));
+             _rightDrive.set(TalonFXControlMode.Velocity, FalconVelocityConverter.percentToVelocity(speeds.right));
          }
+    }
 
+    public void shiftLow() {
+        _shiftSolenoid.set(DoubleSolenoid.Value.kForward);
+    }
+
+    public void shiftHigh() {
+        _shiftSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
 }

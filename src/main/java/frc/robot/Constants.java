@@ -48,9 +48,12 @@ public final class Constants {
     }
 
     public static final class PneumaticPortIds {
-        public static int INTAKE = 0;
-        public static int SHIFTER = 1;
-        public static int SHOOTER_HOOD = 2;
+        public static int INTAKE_FWD = 0;
+        public static int INTAKE_REV = 1;
+        public static int SHIFTER_FWD = 2;
+        public static int SHIFTER_REV = 3;
+        public static int SHOOTER_HOOD_FWD = 4;
+        public static int SHOOTER_HOOD_REV = 5;
     }
     public static final class Controller {
         public static final int PORT_PS4 = 0;

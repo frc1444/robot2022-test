@@ -6,6 +6,8 @@ import com.revrobotics.CANSparkMax.IdleMode;
 
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -16,6 +18,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final CANSparkMax _indexUpper;
     private final DigitalInput _lowerBallSensor;
     private final DigitalInput _upperBallSensor;
+    private final DoubleSolenoid _intakeSolenoid;
 
     private int _ballCount;
     private boolean _previousLowerSensorState;
@@ -24,10 +27,9 @@ public class IntakeSubsystem extends SubsystemBase {
     private boolean _currentUpperSensorState;
 
     private IntakeStates _currentState;
-    private boolean _intakeRaised;
 
-    // TODO pneumatics stuff for raising and lowering intake
-
+    private final DoubleSolenoid.Value INTAKE_UP = DoubleSolenoid.Value.kForward;
+    private final DoubleSolenoid.Value INTAKE_DOWN = DoubleSolenoid.Value.kReverse;
 
     public IntakeSubsystem() {
         _intake = new CANSparkMax(Constants.CanIds.INTAKE, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -37,6 +39,9 @@ public class IntakeSubsystem extends SubsystemBase {
         _indexUpper = new CANSparkMax(Constants.CanIds.INDEX_UPPER, CANSparkMaxLowLevel.MotorType.kBrushless);
         _lowerBallSensor = new DigitalInput(Constants.DigitalIO.LOWER_BALL_SENSOR);
         _upperBallSensor = new DigitalInput(Constants.DigitalIO.UPPER_BALL_SENSOR);
+        _intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 
+            Constants.PneumaticPortIds.INTAKE_FWD, 
+            Constants.PneumaticPortIds.INTAKE_REV);
     
         // Set brake mode for all motors for better control over ball movement
         for (CANSparkMax spark : new CANSparkMax[] {_intake, _singulateLeft, _singulateRight, _indexUpper, _indexLower }) {
@@ -65,7 +70,6 @@ public class IntakeSubsystem extends SubsystemBase {
         _currentLowerSensorState = false;
         _currentUpperSensorState = false;
         _currentState = IntakeStates.Idle;
-        _intakeRaised = true;
     }
 
     @Override
@@ -75,10 +79,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
         _currentLowerSensorState = lowerBallPresent();
         _currentUpperSensorState = upperBallPresent();
-    }
-
-    public void setState(IntakeStates state) {
-        _currentState = state;
     }
 
     public void update() {
@@ -113,8 +113,7 @@ public class IntakeSubsystem extends SubsystemBase {
      * Lower the intake mechanism but don't start the motors
      */
     public void lowerIntake() {
-        _intakeRaised = false;
-        // TODO actually lower the intake
+        _intakeSolenoid.set(DoubleSolenoid.Value.kForward);
         _currentState = IntakeStates.Idle;
     }
 
@@ -123,8 +122,7 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public void raiseIntake() { 
         this.stop(false);
-        // TODO actually raise the intake
-        _intakeRaised = true;
+        _intakeSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
 
     /**
@@ -169,6 +167,7 @@ public class IntakeSubsystem extends SubsystemBase {
         _singulateLeft.set(IntakeControl.Singulate_Eject);
         _indexLower.set(IntakeControl.Lower_Index_Eject);
         _indexUpper.set(IntakeControl.Upper_Index_Eject);
+        _currentState = IntakeStates.Eject;
     }
 
     /**
@@ -179,6 +178,7 @@ public class IntakeSubsystem extends SubsystemBase {
         _singulateLeft.set(IntakeControl.Singulate_Eject);
         _indexLower.set(IntakeControl.Lower_Index_Eject);
         _indexUpper.set(IntakeControl.Stop);
+        _currentState = IntakeStates.EjectLower;
     }
 
     /**
@@ -187,7 +187,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void intake() {
 
         // If the intake is up and the operator wants to intake, lower the intake first
-        if (_intakeRaised) {
+        if (_intakeSolenoid.get() == INTAKE_UP) {
             this.lowerIntake();
         }
 
@@ -210,6 +210,8 @@ public class IntakeSubsystem extends SubsystemBase {
         if (!_previousLowerSensorState && _currentLowerSensorState) {
             _ballCount += 1;
         }
+
+        _currentState = IntakeStates.Intake;
     }
 
     public void feed() {
@@ -222,6 +224,8 @@ public class IntakeSubsystem extends SubsystemBase {
                 _ballCount -= 1;
             }
         }  
+
+        _currentState = IntakeStates.FeedShooter;
     }
 
     /**
