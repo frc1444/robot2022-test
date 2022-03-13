@@ -29,7 +29,6 @@ public class IntakeSubsystem extends SubsystemBase {
     private IntakeStates _currentState;
 
     private final DoubleSolenoid.Value INTAKE_UP = DoubleSolenoid.Value.kForward;
-    private final DoubleSolenoid.Value INTAKE_DOWN = DoubleSolenoid.Value.kReverse;
 
     public IntakeSubsystem() {
         _intake = new CANSparkMax(Constants.CanIds.INTAKE, CANSparkMaxLowLevel.MotorType.kBrushless);

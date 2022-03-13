@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX _shooter;
+    private double _desiredRpm;
 
     public ShooterSubsystem() {
         _shooter = new TalonFX(Constants.CanIds.SHOOTER);
@@ -18,13 +19,17 @@ public class ShooterSubsystem extends SubsystemBase {
         _shooter.config_kF(Constants.SLOT_INDEX, 0.04);
         _shooter.configClosedloopRamp(.40);
         _shooter.configOpenloopRamp(.40);
+
+        _desiredRpm = 0.0;
     }
 
     public void update(double speed) {
-        _shooter.set(TalonFXControlMode.Velocity, FalconVelocityConverter.percentToVelocity(speed));
+        _desiredRpm = FalconVelocityConverter.percentToVelocity(speed);
+        _shooter.set(TalonFXControlMode.Velocity, _desiredRpm);
     }
 
-    public boolean isAtSpeed() {
-        return true;
+    public boolean isAtSetpoint() {
+        var rpmError = Math.abs(_shooter.getSelectedSensorVelocity() - _desiredRpm);
+        return rpmError < 500;
     }
 }

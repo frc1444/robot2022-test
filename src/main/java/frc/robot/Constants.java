@@ -21,8 +21,8 @@ public final class Constants {
     /** Polynomial curve to apply to drive inputs - a value great than 1 will make the input less sensitive with small inputs
      *  i.e. smoother control when moving slowly
     */
-    public static final int FORWARD_INPUT_CURVE = 2;
-    public static final int ROTATE_INPUT_CURVE = 1;
+    public static final int FORWARD_INPUT_CURVE = 3;
+    public static final int ROTATE_INPUT_CURVE = 3;
 
     /** Deadzone for drive controllers */
     public static final double DRIVE_JOYSTICK_DEADZONE = 0.05;
@@ -45,6 +45,7 @@ public final class Constants {
         public static int LEFT_DRIVE_FOLLOWER = 14;
         public static int RIGHT_DRIVE_LEADER = 15;
         public static int RIGHT_DRIVE_FOLLOWER = 16;
+        public static int PIGEON_IMU = 17;
     }
 
     public static final class PneumaticPortIds {

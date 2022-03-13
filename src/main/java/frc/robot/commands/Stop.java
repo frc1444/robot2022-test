@@ -4,14 +4,12 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class ShootLow extends CommandBase {
+public class Stop extends CommandBase {
 
     private final ShooterSubsystem _shooter;
     private final IntakeSubsystem _intake;
 
-    private int _initialBallCount;
-
-    public ShootLow(ShooterSubsystem shooter, IntakeSubsystem intake) {
+    public Stop(ShooterSubsystem shooter, IntakeSubsystem intake) {
         _shooter = shooter;
         _intake = intake;
         addRequirements(
@@ -22,25 +20,12 @@ public class ShootLow extends CommandBase {
 
     @Override
     public void initialize() {
-        _shooter.update(-0.7);
-        _initialBallCount = _intake.getBallCount();
-    }
-
-    @Override
-    public void execute() {
-        if (_shooter.isAtSetpoint()) {
-            _intake.feed();
-        }
-    }
-
-    @Override
-    public void end(boolean interrupted) {
         _shooter.update(0.0);
         _intake.stop(false);
     }
 
     @Override
     public boolean isFinished() {
-        return (_intake.getBallCount() < _initialBallCount) || (_intake.getBallCount() == 0);
+        return true;
     }
 }

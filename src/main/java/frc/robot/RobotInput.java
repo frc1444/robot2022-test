@@ -43,6 +43,10 @@ public class RobotInput {
         return new Trigger(this::driverPovEquals180);
     }
 
+    public Trigger getStopButton() {
+        return new JoystickButton(_driveController, PS4Controller.Button.kSquare.value);
+    }
+
     public double getForward() {
         if (!_driveController.isConnected()) {
             return 0.0;

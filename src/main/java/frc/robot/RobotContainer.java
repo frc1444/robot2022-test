@@ -14,6 +14,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.commands.ShootLow;
+import frc.robot.commands.Stop;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -70,6 +71,7 @@ public class RobotContainer {
     final var shootLowTrigger = _robotInput.getShootLowButton();
     final var raiseIntakeTrigger = _robotInput.getRaiseIntake();
     final var lowerIntakeTrigger = _robotInput.getLowerIntake();
+    final var stopTrigger = _robotInput.getStopButton();
 
     intakeTrigger.whenActive(() -> _intakeSubsystem.intake());
     ejectTrigger.whenActive(() -> _intakeSubsystem.eject(true));
@@ -77,6 +79,7 @@ public class RobotContainer {
     shootLowTrigger.whenActive(new ShootLow(_shooterSubsystem, _intakeSubsystem));
     raiseIntakeTrigger.whenActive(() -> _intakeSubsystem.raiseIntake());
     lowerIntakeTrigger.whenActive(() -> _intakeSubsystem.lowerIntake());
+    stopTrigger.whenActive(new Stop(_shooterSubsystem, _intakeSubsystem));
   }
 
   /**

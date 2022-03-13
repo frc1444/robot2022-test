@@ -5,7 +5,11 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.Pigeon2;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -18,6 +22,9 @@ public class DriveSubsystem extends SubsystemBase {
     private final TalonFX _leftDrive;
     private final TalonFX _rightDrive;
     private final DoubleSolenoid _shiftSolenoid;
+    private final Pigeon2 _gyro;
+
+    private final DifferentialDriveOdometry _odomemtry;
 
     public DriveSubsystem() {
         _leftDrive = new TalonFX(Constants.CanIds.LEFT_DRIVE_LEADER);
@@ -46,6 +53,21 @@ public class DriveSubsystem extends SubsystemBase {
         }
 
         _rightDrive.setInverted(TalonFXInvertType.Clockwise);
+
+        _gyro = new Pigeon2(Constants.CanIds.PIGEON_IMU);
+
+        // TODO these values need to be set dynamically for different autonomous modes
+        _odomemtry = new DifferentialDriveOdometry(new Rotation2d(_gyro.getYaw()), new Pose2d(0.0, 0.0, new Rotation2d()));
+    }
+
+    @Override
+    public void periodic() {
+        // update odometry        
+        _odomemtry.update(
+            new Rotation2d(-_gyro.getYaw()), 
+            _leftDrive.getSelectedSensorPosition(), 
+            _rightDrive.getSelectedSensorPosition()
+        );
     }
 
     /**
