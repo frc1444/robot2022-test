@@ -9,8 +9,6 @@ public class ShootLow extends CommandBase {
     private final ShooterSubsystem _shooter;
     private final IntakeSubsystem _intake;
 
-    private int _initialBallCount;
-
     public ShootLow(ShooterSubsystem shooter, IntakeSubsystem intake) {
         _shooter = shooter;
         _intake = intake;
@@ -23,7 +21,6 @@ public class ShootLow extends CommandBase {
     @Override
     public void initialize() {
         _shooter.update(-0.7);
-        _initialBallCount = _intake.getBallCount();
     }
 
     @Override
@@ -41,6 +38,6 @@ public class ShootLow extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (_intake.getBallCount() < _initialBallCount) || (_intake.getBallCount() == 0);
+        return _intake.wasBallFed();
     }
 }

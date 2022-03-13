@@ -20,7 +20,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final DigitalInput _upperBallSensor;
     private final DoubleSolenoid _intakeSolenoid;
 
-    private int _ballCount;
+    private boolean _wasBallFed;
     private boolean _previousLowerSensorState;
     private boolean _previousUpperSensorState;
     private boolean _currentLowerSensorState;
@@ -62,13 +62,12 @@ public class IntakeSubsystem extends SubsystemBase {
         }
 
         // Start with no balls and intake raised
-        // TODO ball count may need to be set dynamically based on auton mode
-        _ballCount = 0;
         _previousLowerSensorState = false;
         _previousUpperSensorState = false;
         _currentLowerSensorState = false;
         _currentUpperSensorState = false;
         _currentState = IntakeStates.Idle;
+        _wasBallFed = false;
     }
 
     @Override
@@ -83,7 +82,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void update() {
         switch (_currentState) {
             case Idle:
-                this.moveBallUp();
+                this.idle();
             break;
 
             case Stop:
@@ -150,12 +149,6 @@ public class IntakeSubsystem extends SubsystemBase {
         else {
             this.ejectLower();
         }
-
-        if (_previousLowerSensorState && !_currentLowerSensorState) {
-            if (_ballCount > 0) {
-                _ballCount -= 1;
-            }
-        }
     }
 
     /**
@@ -206,25 +199,26 @@ public class IntakeSubsystem extends SubsystemBase {
             this.intakeAll();
         }
 
-        if (!_previousLowerSensorState && _currentLowerSensorState) {
-            _ballCount += 1;
-        }
-
         _currentState = IntakeStates.Intake;
     }
 
     public void feed() {
+        _wasBallFed = false;
+
         if (_previousUpperSensorState == _currentUpperSensorState) {
             _indexUpper.set(IntakeControl.Upper_Index_Intake);
         } else {
             _indexUpper.set(IntakeControl.Stop);
-            
-            if (_ballCount > 0) {
-                _ballCount -= 1;
-            }
+
+            _wasBallFed = true;
+
         }  
 
         _currentState = IntakeStates.FeedShooter;
+    }
+
+    public boolean wasBallFed() {
+        return _wasBallFed;
     }
 
     /**
@@ -238,20 +232,16 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     /**
-     * If the upper indexer is empty and the lower index has a ball, move the ball to the upper indexer
+     * If the upper indexer is empty, run both indexers to move a ball up to the shooter
      */
-    private void moveBallUp() {
-        if (_ballCount > 0 && !upperBallPresent()) {
+    private void idle() {
+        if (!upperBallPresent()) {
             _indexLower.set(IntakeControl.Lower_Index_Intake);
             _indexUpper.set(IntakeControl.Upper_Index_Intake);
         }
         else {
             this.stop(false);
         }
-    }
-
-    public int getBallCount() {
-        return _ballCount;
     }
 
     private boolean lowerBallPresent() {

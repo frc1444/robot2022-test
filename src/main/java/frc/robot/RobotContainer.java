@@ -91,8 +91,4 @@ public class RobotContainer {
     // An ExampleCommand will run in autonomous
     return _autoChooser.getSelected();
   }
-
-  public int getBallCount() {
-    return _intakeSubsystem.getBallCount();
-  }
 }
