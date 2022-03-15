@@ -51,9 +51,6 @@ public class RobotContainer {
       new RunCommand(() -> _intakeSubsystem.update()
       , _intakeSubsystem));
 
-    SmartDashboard.putData(_intakeSubsystem);
-    SmartDashboard.putData(_shooterSubsystem);
-
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -72,6 +69,8 @@ public class RobotContainer {
     final var raiseIntakeTrigger = _robotInput.getRaiseIntake();
     final var lowerIntakeTrigger = _robotInput.getLowerIntake();
     final var stopTrigger = _robotInput.getStopButton();
+    final var shiftHighTrigger = _robotInput.getShiftHigh();
+    final var shiftLowTrigger = _robotInput.getShiftLow();
 
     intakeTrigger.whenActive(() -> _intakeSubsystem.intake());
     ejectTrigger.whenActive(() -> _intakeSubsystem.eject(true));
@@ -80,6 +79,8 @@ public class RobotContainer {
     raiseIntakeTrigger.whenActive(() -> _intakeSubsystem.raiseIntake());
     lowerIntakeTrigger.whenActive(() -> _intakeSubsystem.lowerIntake());
     stopTrigger.whenActive(new Stop(_shooterSubsystem, _intakeSubsystem));
+    shiftHighTrigger.whenActive(() -> _driveSubsystem.shiftHigh());
+    shiftLowTrigger.whenActive(() -> _driveSubsystem.shiftLow());
   }
 
   /**
@@ -90,5 +91,13 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     return _autoChooser.getSelected();
+  }
+
+  public double getDesiredRpm() {
+    return _shooterSubsystem.getDesiredRpm();
+  }
+
+  public double getShooterRpm() {
+    return _shooterSubsystem.getCurrentRpm();
   }
 }

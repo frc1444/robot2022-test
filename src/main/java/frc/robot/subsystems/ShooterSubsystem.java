@@ -30,6 +30,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public boolean isAtSetpoint() {
         var rpmError = Math.abs(_shooter.getSelectedSensorVelocity() - _desiredRpm);
-        return rpmError < 500;
+        return rpmError < 600;
+    }
+
+    public double getDesiredRpm() {
+        return _desiredRpm;
+    }
+
+    public double getCurrentRpm() {
+        return _shooter.getSelectedSensorVelocity();
     }
 }

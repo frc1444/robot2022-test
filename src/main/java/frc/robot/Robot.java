@@ -4,7 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -16,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
     private Command _autonomousCommand;
+    private PneumaticHub _pneumaticHub;
 
     private final RobotContainer _robotContainer;
 
@@ -23,6 +28,7 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         _robotContainer = new RobotContainer();
+        _pneumaticHub = new PneumaticHub(Constants.CanIds.PNEUMATIC_HUB);
     }
 
     /**
@@ -67,12 +73,15 @@ public class Robot extends TimedRobot {
         if (_autonomousCommand != null) {
             _autonomousCommand.cancel();
         }
+
+        _pneumaticHub.enableCompressorDigital();
     }
 
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
-
+        SmartDashboard.putNumber("Shooter Setpoint", _robotContainer.getDesiredRpm());
+        SmartDashboard.putNumber("Shooter RPM", _robotContainer.getShooterRpm());
     }
 
     @Override

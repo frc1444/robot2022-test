@@ -21,7 +21,7 @@ public class Stop extends CommandBase {
     @Override
     public void initialize() {
         _shooter.update(0.0);
-        _intake.stop(false);
+        _intake.stop(true);
     }
 
     @Override

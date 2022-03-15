@@ -47,6 +47,14 @@ public class RobotInput {
         return new JoystickButton(_driveController, PS4Controller.Button.kSquare.value);
     }
 
+    public Trigger getShiftHigh() {
+        return new JoystickButton(_driveController, PS4Controller.Button.kR3.value);
+    }
+
+    public Trigger getShiftLow() {
+        return new JoystickButton(_driveController, PS4Controller.Button.kL3.value);
+    }
+
     public double getForward() {
         if (!_driveController.isConnected()) {
             return 0.0;
