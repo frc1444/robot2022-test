@@ -52,6 +52,7 @@ public final class Constants {
         public static int RIGHT_DRIVE_LEADER = 15;
         public static int RIGHT_DRIVE_FOLLOWER = 16;
         public static int PIGEON_IMU = 17;
+        public static int SHOOTER_HOOD = 18;
     }
 
     public static final class PneumaticPortIds {
