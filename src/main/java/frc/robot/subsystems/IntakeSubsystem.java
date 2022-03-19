@@ -7,7 +7,6 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -30,7 +29,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private final DoubleSolenoid.Value INTAKE_UP = DoubleSolenoid.Value.kForward;
 
-    public IntakeSubsystem() {
+    public IntakeSubsystem(DoubleSolenoid intakeSolenoid) {
         _intake = new CANSparkMax(Constants.CanIds.INTAKE, CANSparkMaxLowLevel.MotorType.kBrushless);
         _singulateLeft = new CANSparkMax(Constants.CanIds.SINGULATE_LEFT, CANSparkMaxLowLevel.MotorType.kBrushless);
         _singulateRight = new CANSparkMax(Constants.CanIds.SINGULATE_RIGHT, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -38,9 +37,7 @@ public class IntakeSubsystem extends SubsystemBase {
         _indexUpper = new CANSparkMax(Constants.CanIds.INDEX_UPPER, CANSparkMaxLowLevel.MotorType.kBrushless);
         _lowerBallSensor = new DigitalInput(Constants.DigitalIO.LOWER_BALL_SENSOR);
         _upperBallSensor = new DigitalInput(Constants.DigitalIO.UPPER_BALL_SENSOR);
-        _intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 
-            Constants.PneumaticPortIds.INTAKE_FWD, 
-            Constants.PneumaticPortIds.INTAKE_REV);
+        _intakeSolenoid = intakeSolenoid;
     
         // Set brake mode for all motors for better control over ball movement
         for (CANSparkMax spark : new CANSparkMax[] {_intake, _singulateLeft, _singulateRight, _indexUpper, _indexLower }) {
@@ -209,12 +206,9 @@ public class IntakeSubsystem extends SubsystemBase {
             _indexUpper.set(IntakeControl.Upper_Index_Intake);
         } else {
             _indexUpper.set(IntakeControl.Stop);
-
             _wasBallFed = true;
-
         }  
-
-        _currentState = IntakeStates.FeedShooter;
+        _currentState = IntakeStates.Idle;
     }
 
     public boolean wasBallFed() {
@@ -235,7 +229,7 @@ public class IntakeSubsystem extends SubsystemBase {
      * If the upper indexer is empty, run both indexers to move a ball up to the shooter
      */
     private void idle() {
-        if (!upperBallPresent()) {
+        if (!_currentUpperSensorState) {
             _indexLower.set(IntakeControl.Lower_Index_Intake);
             _indexUpper.set(IntakeControl.Upper_Index_Intake);
         }

@@ -60,9 +60,9 @@ public class RobotInput {
             return 0.0;
         }
         double raw = -_driveController.getLeftY();
-        if (Math.abs(raw) < Constants.DRIVE_JOYSTICK_DEADZONE) {
-            return 0.0;
-        }
+        //if (Math.abs(raw) < Constants.DRIVE_JOYSTICK_DEADZONE) {
+        //    return 0.0;
+        //}
 
         return applyInputCurve(raw, Constants.FORWARD_INPUT_CURVE);
     }
@@ -71,9 +71,10 @@ public class RobotInput {
             return 0.0;
         }
         double raw = _driveController.getRightX();
-        if (Math.abs(raw) < Constants.DRIVE_JOYSTICK_DEADZONE) {
-            return 0.0;
-        }
+        //if (Math.abs(raw) < Constants.DRIVE_JOYSTICK_DEADZONE) {
+         //   return 0.0;
+        //}
+        
         return applyInputCurve(raw, Constants.ROTATE_INPUT_CURVE);
     }
 

@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -26,12 +25,10 @@ public class DriveSubsystem extends SubsystemBase {
 
     private final DifferentialDriveOdometry _odomemtry;
 
-    public DriveSubsystem() {
+    public DriveSubsystem(DoubleSolenoid shiftSolenoid) {
         _leftDrive = new TalonFX(Constants.CanIds.LEFT_DRIVE_LEADER);
         _rightDrive = new TalonFX(Constants.CanIds.RIGHT_DRIVE_LEADER);
-        _shiftSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
-            Constants.PneumaticPortIds.SHIFTER_FWD,
-            Constants.PneumaticPortIds.SHIFTER_REV);
+        _shiftSolenoid = shiftSolenoid;
 
         TalonFX leftFollower = new TalonFX(Constants.CanIds.LEFT_DRIVE_FOLLOWER);
         leftFollower.follow(_leftDrive, FollowerType.PercentOutput);
@@ -45,16 +42,17 @@ public class DriveSubsystem extends SubsystemBase {
             talonFX.configFactoryDefault();
             talonFX.setNeutralMode(NeutralMode.Coast);
 
-            talonFX.config_kP(Constants.SLOT_INDEX, 0.06);
-            talonFX.config_kF(Constants.SLOT_INDEX, 0.04);
+            talonFX.config_kP(Constants.SLOT_INDEX, 0.12);
+            talonFX.config_kF(Constants.SLOT_INDEX, 0.06);
             talonFX.configClosedloopRamp(.40);
             talonFX.configOpenloopRamp(.40);
-            //talonFX.configNeutralDeadband(0.04);    // in case we don't want to use the manual deadband in RobotInput
+            talonFX.configNeutralDeadband(0.04);    // in case we don't want to use the manual deadband in RobotInput
         }
 
         _rightDrive.setInverted(TalonFXInvertType.Clockwise);
 
         _gyro = new Pigeon2(Constants.CanIds.PIGEON_IMU);
+        _gyro.configFactoryDefault();
 
         // TODO these values need to be set dynamically for different autonomous modes
         _odomemtry = new DifferentialDriveOdometry(new Rotation2d(_gyro.getYaw()), new Pose2d(0.0, 0.0, new Rotation2d()));
@@ -62,9 +60,13 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // update odometry        
+        // update odometry      
+        
+        var yaw = _gyro.getYaw();
+
+
         _odomemtry.update(
-            new Rotation2d(-_gyro.getYaw()), 
+            new Rotation2d(-(yaw % 360.0)), 
             _leftDrive.getSelectedSensorPosition(), 
             _rightDrive.getSelectedSensorPosition()
         );
@@ -78,19 +80,21 @@ public class DriveSubsystem extends SubsystemBase {
        */
      public void arcadeDrive(double fwd, double rot) {
 
+
+
          // We can easily change this to arcade drive if we feel like it
          DifferentialDrive.WheelSpeeds speeds = DifferentialDrive.curvatureDriveIK(fwd, rot, true);
 
-         if (speeds.left == 0.0) {
-             _leftDrive.neutralOutput();
-         } else {
+         //if (speeds.left == 0.0) {
+         //    _leftDrive.neutralOutput();
+         //} else {
              _leftDrive.set(TalonFXControlMode.Velocity, FalconVelocityConverter.percentToVelocity(speeds.left));
-         }
-         if (speeds.right == 0.0) {
+         //}
+         //if (speeds.right == 0.0) {
              _rightDrive.neutralOutput();
-         } else {
+         //} else {
              _rightDrive.set(TalonFXControlMode.Velocity, FalconVelocityConverter.percentToVelocity(speeds.right));
-         }
+         //}
     }
 
     public void shiftLow() {
@@ -99,5 +103,17 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void shiftHigh() {
         _shiftSolenoid.set(DoubleSolenoid.Value.kReverse);
+    }
+
+    public double getSetpoint() {
+        return (_leftDrive.getClosedLoopTarget() + _rightDrive.getClosedLoopTarget());
+    }
+
+    public double getVelocity() {
+        return (_leftDrive.getSelectedSensorVelocity() + _rightDrive.getSelectedSensorVelocity());
+    }
+
+    public double getAngle() {
+        return _gyro.getYaw() % 360.0;
     }
 }

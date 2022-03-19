@@ -4,9 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.PneumaticHub;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
     private Command _autonomousCommand;
-    private PneumaticHub _pneumaticHub;
 
     private final RobotContainer _robotContainer;
 
@@ -28,7 +24,6 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         _robotContainer = new RobotContainer();
-        _pneumaticHub = new PneumaticHub(Constants.CanIds.PNEUMATIC_HUB);
     }
 
     /**
@@ -74,14 +69,26 @@ public class Robot extends TimedRobot {
             _autonomousCommand.cancel();
         }
 
-        _pneumaticHub.enableCompressorDigital();
+        SmartDashboard.putNumber("Shooter kP", 0.15);
+        SmartDashboard.putNumber("Shooter kI", 0.0001);
+        SmartDashboard.putNumber("Shooter kD", 0.01);
     }
 
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
-        SmartDashboard.putNumber("Shooter Setpoint", _robotContainer.getDesiredRpm());
+        SmartDashboard.putNumber("Shooter Setpoint", _robotContainer.getShooterSetpoint());
         SmartDashboard.putNumber("Shooter RPM", _robotContainer.getShooterRpm());
+        //SmartDashboard.putNumber("Drive Setpoint", _robotContainer.getDriveSetpoint());
+        //SmartDashboard.putNumber("Drive Veloctiy", _robotContainer.getDriveVelocity());
+        //SmartDashboard.putNumber("Robot Angle", _robotContainer.getAngle());
+
+        var kP = SmartDashboard.getNumber("Shooter kP", 0.15);
+        var kI = SmartDashboard.getNumber("Shooter kI", 0.0001);
+        var kD = SmartDashboard.getNumber("Shooter kD", 0.01);
+
+        _robotContainer.updateShooterPid(kP, kI, kD);
+
     }
 
     @Override

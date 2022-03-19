@@ -6,13 +6,14 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.commands.ShootHigh;
 import frc.robot.commands.ShootLow;
 import frc.robot.commands.Stop;
 
@@ -27,8 +28,10 @@ import frc.robot.commands.Stop;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DriveSubsystem _driveSubsystem = new DriveSubsystem();
-  private final IntakeSubsystem _intakeSubsystem = new IntakeSubsystem();
+  
+  private final PneumaticHub _pneumaticsHub;
+  private final DriveSubsystem _driveSubsystem;
+  private final IntakeSubsystem _intakeSubsystem;
   private final ShooterSubsystem _shooterSubsystem = new ShooterSubsystem();
 
   private final RobotInput _robotInput = new RobotInput(
@@ -43,6 +46,21 @@ public class RobotContainer {
    */
   public RobotContainer() {
 
+  _pneumaticsHub = new PneumaticHub(Constants.CanIds.PNEUMATIC_HUB);
+
+  _driveSubsystem = new DriveSubsystem(
+    _pneumaticsHub.makeDoubleSolenoid(
+      Constants.PneumaticPortIds.SHIFTER_FWD, 
+      Constants.PneumaticPortIds.SHIFTER_REV)
+  );
+
+  _intakeSubsystem = new IntakeSubsystem(
+    _pneumaticsHub.makeDoubleSolenoid(
+      Constants.PneumaticPortIds.INTAKE_FWD,
+      Constants.PneumaticPortIds.INTAKE_REV
+    )
+  );
+  
     _driveSubsystem.setDefaultCommand(
       new RunCommand(() -> _driveSubsystem.arcadeDrive(_robotInput.getForward(), _robotInput.getSteer())
       , _driveSubsystem));
@@ -66,6 +84,7 @@ public class RobotContainer {
     final var ejectTrigger = _robotInput.getEjectButton();
     final var ejectLowerTrigger = _robotInput.getEjectLowerButton();
     final var shootLowTrigger = _robotInput.getShootLowButton();
+    final var shootHighTrigger = _robotInput.getShootHighButton();
     final var raiseIntakeTrigger = _robotInput.getRaiseIntake();
     final var lowerIntakeTrigger = _robotInput.getLowerIntake();
     final var stopTrigger = _robotInput.getStopButton();
@@ -75,12 +94,14 @@ public class RobotContainer {
     intakeTrigger.whenActive(() -> _intakeSubsystem.intake());
     ejectTrigger.whenActive(() -> _intakeSubsystem.eject(true));
     ejectLowerTrigger.whenActive(() -> _intakeSubsystem.eject(false));
-    shootLowTrigger.whenActive(new ShootLow(_shooterSubsystem, _intakeSubsystem));
+    shootLowTrigger.whileActiveContinuous(new ShootLow(_shooterSubsystem, _intakeSubsystem));
+    shootHighTrigger.whileActiveContinuous(new ShootHigh(_shooterSubsystem, _intakeSubsystem));
     raiseIntakeTrigger.whenActive(() -> _intakeSubsystem.raiseIntake());
     lowerIntakeTrigger.whenActive(() -> _intakeSubsystem.lowerIntake());
     stopTrigger.whenActive(new Stop(_shooterSubsystem, _intakeSubsystem));
     shiftHighTrigger.whenActive(() -> _driveSubsystem.shiftHigh());
     shiftLowTrigger.whenActive(() -> _driveSubsystem.shiftLow());
+    
   }
 
   /**
@@ -93,11 +114,28 @@ public class RobotContainer {
     return _autoChooser.getSelected();
   }
 
-  public double getDesiredRpm() {
-    return _shooterSubsystem.getDesiredRpm();
+  public double getShooterSetpoint() {
+    return _shooterSubsystem.getSetpoint();
   }
 
   public double getShooterRpm() {
     return _shooterSubsystem.getCurrentRpm();
   }
+
+  public double getDriveSetpoint() {
+    return _driveSubsystem.getSetpoint();
+  }
+
+  public double getDriveVelocity() {
+    return _driveSubsystem.getVelocity();
+  }
+
+  public double getAngle() {
+    return _driveSubsystem.getAngle();
+  }
+
+  public void updateShooterPid(double kP, double kI, double kD) {
+    _shooterSubsystem.updatePid(kP, kI, kD);
+  }
+  
 }

@@ -5,12 +5,12 @@ import frc.robot.Constants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class ShootLow extends CommandBase {
+public class ShootHigh extends CommandBase {
 
     private final ShooterSubsystem _shooter;
     private final IntakeSubsystem _intake;
 
-    public ShootLow(ShooterSubsystem shooter, IntakeSubsystem intake) {
+    public ShootHigh(ShooterSubsystem shooter, IntakeSubsystem intake) {
         _shooter = shooter;
         _intake = intake;
         addRequirements(
@@ -21,7 +21,7 @@ public class ShootLow extends CommandBase {
 
     @Override
     public void initialize() {
-        _shooter.update(Constants.SHOOT_LOW_SPEED);
+        _shooter.update(Constants.SHOOT_HIGH_SPEED);
     }
 
     @Override

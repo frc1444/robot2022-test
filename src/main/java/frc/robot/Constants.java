@@ -27,6 +27,12 @@ public final class Constants {
     /** Deadzone for drive controllers */
     public static final double DRIVE_JOYSTICK_DEADZONE = 0.05;
 
+    /** Shooter speed for high goal */
+    public static final double SHOOT_HIGH_SPEED = -0.7;
+
+    /** Shooter speed for low goal */
+    public static final double SHOOT_LOW_SPEED = -0.4;
+
     public static final class CanIds {
 
         public static int POWER_DIST_HUB = 1;
@@ -49,12 +55,14 @@ public final class Constants {
     }
 
     public static final class PneumaticPortIds {
-        public static int INTAKE_FWD = 0;
-        public static int INTAKE_REV = 1;
-        public static int SHIFTER_FWD = 2;
-        public static int SHIFTER_REV = 3;
-        public static int SHOOTER_HOOD_FWD = 4;
-        public static int SHOOTER_HOOD_REV = 5;
+        public static int INTAKE_FWD = 15;
+        public static int INTAKE_REV = 11;
+        public static int SHIFTER_FWD = 14;
+        public static int SHIFTER_REV = 10;
+        public static int SHOOTER_HOOD_FWD = 13;
+        public static int SHOOTER_HOOD_REV = 9;
+        public static int CLIMB_FWD = 12;
+        public static int CLIMB_REV = 8;
     }
     public static final class Controller {
         public static final int PORT_PS4 = 0;
