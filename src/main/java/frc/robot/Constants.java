@@ -65,8 +65,8 @@ public final class Constants {
         public static int CLIMB_REV = 8;
     }
     public static final class Controller {
-        public static final int PORT_PS4 = 0;
-        public static final int PORT_EXTREME = 1;
+        public static final int PORT_PS4_DRIVER = 0;
+        public static final int PORT_PS4_OPERATOR = 4;
     }
 
     public static final class DigitalIO {

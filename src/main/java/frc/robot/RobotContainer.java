@@ -35,8 +35,8 @@ public class RobotContainer {
   private final ShooterSubsystem _shooterSubsystem = new ShooterSubsystem();
 
   private final RobotInput _robotInput = new RobotInput(
-    new PS4Controller(Constants.Controller.PORT_PS4),
-    new GenericHID(Constants.Controller.PORT_EXTREME));
+    new PS4Controller(Constants.Controller.PORT_PS4_DRIVER),
+    new PS4Controller(Constants.Controller.PORT_PS4_OPERATOR));
 
   // A chooser for autonomous commands
   private final SendableChooser<Command> _autoChooser = new SendableChooser<>();

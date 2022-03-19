@@ -1,6 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -8,51 +7,63 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotInput {
 
     private final PS4Controller _driveController;
-    private final GenericHID _extremeController;
+    private final PS4Controller _operatorController;
 
-    public RobotInput(PS4Controller ps4Controller, GenericHID extremeController) {
+    private boolean _singleControllerMode;
+
+    public RobotInput(PS4Controller ps4Controller, PS4Controller operatorController) {
         _driveController = ps4Controller;
-        _extremeController = extremeController;
+        _operatorController = operatorController;
+
+        _singleControllerMode = !_operatorController.isConnected();
     }
 
     public Trigger getIntakeButton() {
-        return new JoystickButton(_driveController, PS4Controller.Button.kTriangle.value);
+        return new JoystickButton(_singleControllerMode ? _driveController : _operatorController, 
+            PS4Controller.Button.kTriangle.value);     
     }
 
     public Trigger getEjectButton() {
-        return new JoystickButton(_driveController, PS4Controller.Button.kCross.value);
+        return new JoystickButton(_singleControllerMode ? _driveController : _operatorController,
+            PS4Controller.Button.kCross.value);
     }
 
     public Trigger getEjectLowerButton() {
-        return new JoystickButton(_driveController, PS4Controller.Button.kCircle.value);
+        return new JoystickButton(_singleControllerMode ? _driveController : _operatorController,
+            PS4Controller.Button.kCircle.value);
     }
 
     public Trigger getShootLowButton() {
-        return new JoystickButton(_driveController, PS4Controller.Button.kL1.value);
+        return new JoystickButton(_singleControllerMode ? _driveController : _operatorController,
+            PS4Controller.Button.kL1.value);
     }
 
     public Trigger getShootHighButton() {
-        return new JoystickButton(_driveController, PS4Controller.Button.kR1.value);
+        return new JoystickButton(_singleControllerMode ? _driveController : _operatorController,
+            PS4Controller.Button.kR1.value);
     }
 
     public Trigger getRaiseIntake() {
-        return new Trigger(this::driverPovEquals0);
+        return new Trigger(_singleControllerMode ? this::driverPovEquals0 : this::operatorPovEquals0);
     }
 
     public Trigger getLowerIntake() {
-        return new Trigger(this::driverPovEquals180);
+        return new Trigger(_singleControllerMode ? this::driverPovEquals180 : this::operatorPovEquals180);
     }
 
     public Trigger getStopButton() {
-        return new JoystickButton(_driveController, PS4Controller.Button.kSquare.value);
+        return new JoystickButton(_singleControllerMode ? _driveController : _operatorController,
+            PS4Controller.Button.kSquare.value);
     }
 
     public Trigger getShiftHigh() {
-        return new JoystickButton(_driveController, PS4Controller.Button.kR3.value);
+        return new JoystickButton(_driveController, 
+            _singleControllerMode ? PS4Controller.Button.kR3.value : PS4Controller.Button.kR1.value);
     }
 
     public Trigger getShiftLow() {
-        return new JoystickButton(_driveController, PS4Controller.Button.kL3.value);
+        return new JoystickButton(_driveController, 
+            _singleControllerMode ? PS4Controller.Button.kL3.value : PS4Controller.Button.kL1.value);
     }
 
     public double getForward() {
@@ -74,15 +85,15 @@ public class RobotInput {
         //if (Math.abs(raw) < Constants.DRIVE_JOYSTICK_DEADZONE) {
          //   return 0.0;
         //}
-        
+
         return applyInputCurve(raw, Constants.ROTATE_INPUT_CURVE);
     }
 
     public double getIntakeSpeed() {
-        if (!_extremeController.isConnected()) {
+        if (!_operatorController.isConnected()) {
             return 0.0;
         }
-        int pov = _extremeController.getPOV(Constants.ControllerExtreme.POV);
+        int pov = _operatorController.getPOV(Constants.ControllerExtreme.POV);
         if (pov == -1) {
             return 0.0;
         }
@@ -111,10 +122,10 @@ public class RobotInput {
 
 
     private boolean isGridMiddleLeft() {
-        return _extremeController.isConnected() && _extremeController.getRawButton(Constants.ControllerExtreme.GRID_MIDDLE_LEFT);
+        return _operatorController.isConnected() && _operatorController.getRawButton(Constants.ControllerExtreme.GRID_MIDDLE_LEFT);
     }
     private boolean isGridMiddleRight() {
-        return _extremeController.isConnected() && _extremeController.getRawButton(Constants.ControllerExtreme.GRID_MIDDLE_RIGHT);
+        return _operatorController.isConnected() && _operatorController.getRawButton(Constants.ControllerExtreme.GRID_MIDDLE_RIGHT);
     }
 
     private boolean driverPovEquals0() {
@@ -123,6 +134,14 @@ public class RobotInput {
 
     private boolean driverPovEquals180() {
         return _driveController.getPOV() == 180;
+    }
+
+    private boolean operatorPovEquals0() {
+        return _operatorController.getPOV() == 0;
+    }
+
+    private boolean operatorPovEquals180() {
+        return _operatorController.getPOV() == 180;
     }
 
     /**
