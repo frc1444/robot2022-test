@@ -32,7 +32,7 @@ public class RobotContainer {
   private final PneumaticHub _pneumaticsHub;
   private final DriveSubsystem _driveSubsystem;
   private final IntakeSubsystem _intakeSubsystem;
-  private final ShooterSubsystem _shooterSubsystem = new ShooterSubsystem();
+  private final ShooterSubsystem _shooterSubsystem;
 
   private final RobotInput _robotInput = new RobotInput(
     new PS4Controller(Constants.Controller.PORT_PS4_DRIVER),
@@ -60,17 +60,24 @@ public class RobotContainer {
       Constants.PneumaticPortIds.INTAKE_REV
     )
   );
+
+  _shooterSubsystem = new ShooterSubsystem(
+    _pneumaticsHub.makeDoubleSolenoid(
+      Constants.PneumaticPortIds.SHOOTER_HOOD_FWD,
+      Constants.PneumaticPortIds.SHOOTER_HOOD_REV
+    )
+  );
   
-    _driveSubsystem.setDefaultCommand(
-      new RunCommand(() -> _driveSubsystem.arcadeDrive(_robotInput.getForward(), _robotInput.getSteer())
-      , _driveSubsystem));
+  _driveSubsystem.setDefaultCommand(
+    new RunCommand(() -> _driveSubsystem.arcadeDrive(_robotInput.getForward(), _robotInput.getSteer())
+    , _driveSubsystem));
 
-    _intakeSubsystem.setDefaultCommand(
-      new RunCommand(() -> _intakeSubsystem.update()
-      , _intakeSubsystem));
+  _intakeSubsystem.setDefaultCommand(
+    new RunCommand(() -> _intakeSubsystem.update()
+    , _intakeSubsystem));
 
-    // Configure the button bindings
-    configureButtonBindings();
+  // Configure the button bindings
+  configureButtonBindings();
   }
 
   /**

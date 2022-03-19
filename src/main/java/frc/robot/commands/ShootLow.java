@@ -21,6 +21,7 @@ public class ShootLow extends CommandBase {
 
     @Override
     public void initialize() {
+        _shooter.setHoodLow();
         _shooter.update(Constants.SHOOT_LOW_SPEED);
     }
 

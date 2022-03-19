@@ -21,6 +21,7 @@ public class ShootHigh extends CommandBase {
 
     @Override
     public void initialize() {
+        _shooter.setHoodHigh();
         _shooter.update(Constants.SHOOT_HIGH_SPEED);
     }
 

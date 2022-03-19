@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants;
 import frc.robot.util.FalconVelocityConverter;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
@@ -10,14 +11,16 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX _shooter;
     private final TalonFX _hood;
+    private final DoubleSolenoid _hoodSolenoid;
     private double _shooterSetpoint;
 
     private final double HOOD_SETPOINT = 1.0;
     private final double SHOOTER_ERROR_LIMIT = 200;
 
-    public ShooterSubsystem() {
+    public ShooterSubsystem(DoubleSolenoid hoodSolenoid) {
         _shooter = new TalonFX(Constants.CanIds.SHOOTER);
         _hood = new TalonFX(Constants.CanIds.SHOOTER_HOOD);
+        _hoodSolenoid = hoodSolenoid;
         
         _shooter.configFactoryDefault();
         _shooter.setNeutralMode(NeutralMode.Coast);
@@ -49,6 +52,14 @@ public class ShooterSubsystem extends SubsystemBase {
             var hoodSetpoint = FalconVelocityConverter.percentToVelocity(HOOD_SETPOINT);
             _hood.set(TalonFXControlMode.Velocity, hoodSetpoint);
         }
+    }
+
+    public void setHoodLow() {
+        _hoodSolenoid.set(DoubleSolenoid.Value.kForward);
+    }
+
+    public void setHoodHigh() {
+        _hoodSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
 
     public boolean isAtSetpoint() {
