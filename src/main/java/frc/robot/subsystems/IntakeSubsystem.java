@@ -202,6 +202,13 @@ public class IntakeSubsystem extends SubsystemBase {
     public void feed() {
         _wasBallFed = false;
 
+        if (!_currentUpperSensorState) {
+            _indexLower.set(IntakeControl.Lower_Index_Intake);
+        }
+        else {
+            _indexLower.set(IntakeControl.Stop);
+        }
+
         if (_previousUpperSensorState == _currentUpperSensorState) {
             _indexUpper.set(IntakeControl.Upper_Index_Intake);
         } else {

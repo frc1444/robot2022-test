@@ -28,10 +28,10 @@ public final class Constants {
     public static final double DRIVE_JOYSTICK_DEADZONE = 0.05;
 
     /** Shooter speed for high goal */
-    public static final double SHOOT_HIGH_SPEED = -0.7;
+    public static final double SHOOT_HIGH_SPEED = -0.5;
 
     /** Shooter speed for low goal */
-    public static final double SHOOT_LOW_SPEED = -0.4;
+    public static final double SHOOT_LOW_SPEED = -0.3;
 
     public static final class CanIds {
 
@@ -56,14 +56,14 @@ public final class Constants {
     }
 
     public static final class PneumaticPortIds {
-        public static int INTAKE_FWD = 15;
-        public static int INTAKE_REV = 11;
-        public static int SHIFTER_FWD = 14;
-        public static int SHIFTER_REV = 10;
-        public static int SHOOTER_HOOD_FWD = 13;
-        public static int SHOOTER_HOOD_REV = 9;
-        public static int CLIMB_FWD = 12;
-        public static int CLIMB_REV = 8;
+        public static int INTAKE_FWD = 15;          // orange
+        public static int INTAKE_REV = 11;          // black/yellow
+        public static int SHIFTER_FWD = 14;         // red
+        public static int SHIFTER_REV = 10;         // yellow
+        public static int SHOOTER_HOOD_FWD = 13;    // green
+        public static int SHOOTER_HOOD_REV = 9;     // black
+        public static int CLIMB_FWD = 12;           // blue
+        public static int CLIMB_REV = 8;            // no color
     }
     public static final class Controller {
         public static final int PORT_PS4_DRIVER = 0;

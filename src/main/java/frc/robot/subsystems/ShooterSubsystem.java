@@ -14,7 +14,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final DoubleSolenoid _hoodSolenoid;
     private double _shooterSetpoint;
 
-    private final double HOOD_SETPOINT = 1.0;
+    private final double HOOD_SETPOINT = -1.0;
     private final double SHOOTER_ERROR_LIMIT = 200;
 
     public ShooterSubsystem(DoubleSolenoid hoodSolenoid) {
@@ -24,18 +24,19 @@ public class ShooterSubsystem extends SubsystemBase {
         
         _shooter.configFactoryDefault();
         _shooter.setNeutralMode(NeutralMode.Coast);
-        _shooter.config_kP(Constants.SLOT_INDEX, 0.12);
+        _shooter.config_kP(Constants.SLOT_INDEX, 0.15);
         _shooter.config_kF(Constants.SLOT_INDEX, 0.04);
-        _shooter.config_kI(Constants.SLOT_INDEX, 0.001);
-        //_shooter.configClosedloopRamp(.40);
-        //_shooter.configOpenloopRamp(.40);
+        _shooter.config_kI(Constants.SLOT_INDEX, 0.0001);
+        _shooter.config_kD(Constants.SLOT_INDEX, 0.01);
+        _shooter.configClosedloopRamp(.40);
+        _shooter.configOpenloopRamp(.40);
         _shooter.configPeakOutputForward(0.0);
 
         _hood.configFactoryDefault();
         _hood.setNeutralMode(NeutralMode.Coast);
-        _shooter.configPeakOutputReverse(0.0);
-        _shooter.config_kP(Constants.SLOT_INDEX, 0.06);
-        _shooter.config_kF(Constants.SLOT_INDEX, 0.02);
+        _hood.configPeakOutputForward(0.0);
+        _hood.config_kP(Constants.SLOT_INDEX, 0.06);
+        _hood.config_kF(Constants.SLOT_INDEX, 0.02);
 
         _shooterSetpoint = 0.0;
     }
