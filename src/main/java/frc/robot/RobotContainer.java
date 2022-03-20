@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.commands.QuickLeft;
+import frc.robot.commands.QuickRight;
 import frc.robot.commands.ShootHigh;
 import frc.robot.commands.ShootLow;
 import frc.robot.commands.Stop;
@@ -95,8 +97,11 @@ public class RobotContainer {
     final var raiseIntakeTrigger = _robotInput.getRaiseIntake();
     final var lowerIntakeTrigger = _robotInput.getLowerIntake();
     final var stopTrigger = _robotInput.getStopButton();
+
     final var shiftHighTrigger = _robotInput.getShiftHigh();
     final var shiftLowTrigger = _robotInput.getShiftLow();
+    final var quickLeftTrigger = _robotInput.getQuickLeft();
+    final var quickRightTrigger = _robotInput.getQuickRight();
 
     intakeTrigger.whenActive(() -> _intakeSubsystem.intake());
     ejectTrigger.whenActive(() -> _intakeSubsystem.eject(true));
@@ -106,9 +111,11 @@ public class RobotContainer {
     raiseIntakeTrigger.whenActive(() -> _intakeSubsystem.raiseIntake());
     lowerIntakeTrigger.whenActive(() -> _intakeSubsystem.lowerIntake());
     stopTrigger.whenActive(new Stop(_shooterSubsystem, _intakeSubsystem));
+
     shiftHighTrigger.whenActive(() -> _driveSubsystem.shiftHigh());
     shiftLowTrigger.whenActive(() -> _driveSubsystem.shiftLow());
-    
+    quickLeftTrigger.whileActiveContinuous(new QuickLeft(_driveSubsystem));
+    quickRightTrigger.whileActiveContinuous(new QuickRight(_driveSubsystem));
   }
 
   /**
@@ -138,7 +145,7 @@ public class RobotContainer {
   }
 
   public double getAngle() {
-    return _driveSubsystem.getAngle();
+    return _driveSubsystem.getHeading();
   }
 
   public void updateShooterPid(double kP, double kI, double kD) {

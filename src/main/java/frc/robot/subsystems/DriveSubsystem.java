@@ -61,12 +61,9 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // update odometry      
-        
-        var yaw = _gyro.getYaw();
-
 
         _odomemtry.update(
-            new Rotation2d(-(yaw % 360.0)), 
+            new Rotation2d(getHeading()), 
             _leftDrive.getSelectedSensorPosition(), 
             _rightDrive.getSelectedSensorPosition()
         );
@@ -113,7 +110,7 @@ public class DriveSubsystem extends SubsystemBase {
         return (_leftDrive.getSelectedSensorVelocity() + _rightDrive.getSelectedSensorVelocity());
     }
 
-    public double getAngle() {
-        return _gyro.getYaw() % 360.0;
+    public double getHeading() {
+        return Math.IEEEremainder(_gyro.getYaw(), 360);
     }
 }

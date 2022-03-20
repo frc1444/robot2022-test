@@ -66,6 +66,18 @@ public class RobotInput {
             _singleControllerMode ? PS4Controller.Button.kL3.value : PS4Controller.Button.kL1.value);
     }
 
+    public Trigger getQuickLeft() {
+        // If single controller mode, there won't be quick move triggers, so just return 0
+        return new JoystickButton(_driveController, 
+            _singleControllerMode ? 0 : PS4Controller.Button.kSquare.value);
+    }
+
+    public Trigger getQuickRight() {
+        // If single controller mode, there won't be quick move triggers, so just return 0
+        return new JoystickButton(_driveController, 
+            _singleControllerMode ? 0 : PS4Controller.Button.kCircle.value);
+    }
+
     public double getForward() {
         if (!_driveController.isConnected()) {
             return 0.0;
@@ -87,45 +99,6 @@ public class RobotInput {
         //}
 
         return applyInputCurve(raw, Constants.ROTATE_INPUT_CURVE);
-    }
-
-    public double getIntakeSpeed() {
-        if (!_operatorController.isConnected()) {
-            return 0.0;
-        }
-        int pov = _operatorController.getPOV(Constants.ControllerExtreme.POV);
-        if (pov == -1) {
-            return 0.0;
-        }
-        if (pov == 0 || pov == 45 || pov == 315) { // up or diagonal up
-            return -1.0; // if POV is up, spit out
-        }
-        if (pov == 90 || pov == 270) { // side
-            return 0.0;
-        }
-        return 1.0;
-    }
-
-    /**
-     * Assuming the labels are kept on the extreme joystick, this just 1.0 for in and -1.0 for out indexer
-     */
-    public double getManualIndexerSpeed() {
-        double value = 0.0;
-        if (isGridMiddleLeft()) { // in
-            value += 1.0;
-        }
-        if (isGridMiddleRight()) { // out
-            value -= 1.0;
-        }
-        return value;
-    }
-
-
-    private boolean isGridMiddleLeft() {
-        return _operatorController.isConnected() && _operatorController.getRawButton(Constants.ControllerExtreme.GRID_MIDDLE_LEFT);
-    }
-    private boolean isGridMiddleRight() {
-        return _operatorController.isConnected() && _operatorController.getRawButton(Constants.ControllerExtreme.GRID_MIDDLE_RIGHT);
     }
 
     private boolean driverPovEquals0() {

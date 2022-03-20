@@ -81,7 +81,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Shooter RPM", _robotContainer.getShooterRpm());
         //SmartDashboard.putNumber("Drive Setpoint", _robotContainer.getDriveSetpoint());
         //SmartDashboard.putNumber("Drive Veloctiy", _robotContainer.getDriveVelocity());
-        //SmartDashboard.putNumber("Robot Angle", _robotContainer.getAngle());
+        SmartDashboard.putNumber("Robot Angle", _robotContainer.getAngle());
 
         var kP = SmartDashboard.getNumber("Shooter kP", 0.15);
         var kI = SmartDashboard.getNumber("Shooter kI", 0.0001);
