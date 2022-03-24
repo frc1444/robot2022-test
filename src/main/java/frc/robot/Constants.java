@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public final class Constants {
@@ -94,6 +95,29 @@ public final class Constants {
 
         public static final double RAMP_RATE = 0.4;
         public static final double DEAD_ZONE = 0.04;
+
+        /** The constants below are used for trajectory and path planning.
+         * They are based on the "Path Planning" tutorial and as such use the same naming
+         * convention for consistency.
+         */
+
+        public static final double kTrackWidthMeters = 0.6477;
+        public static final DifferentialDriveKinematics kDriveKinematics = 
+            new DifferentialDriveKinematics(kTrackWidthMeters);
+
+        /** These constants were determined using the WPILib sysid tool */
+        public static final double ksVolts = 0.64488;
+        public static final double kvVoltSecondsPerMeter = 3.4659;
+        public static final double kaVoltSecondSquarePerMeter = 0.35067;
+        public static final double kPDriveVel = 0.035411;
+
+        public static final double kMaxSpeedMetersPerSecond = 3.0;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
+
+        public static final double kRamseteB = 2;
+        public static final double kRamseteZeta = 0.7;
+
+        
     }
 
     public static final class ShooterConstants {
