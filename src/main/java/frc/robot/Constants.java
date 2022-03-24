@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+
 public final class Constants {
     private Constants() { throw new UnsupportedOperationException(); }
 
@@ -102,11 +104,11 @@ public final class Constants {
         public static final double SHOOTER_RAMP_RATE = 0.4;        
         public static final double SHOOTER_ERROR_LIMIT = 200;
 
-            /** Shooter speed for high goal */
-        public static final double SHOOT_HIGH_SPEED = -0.40;
+        /** Shooter speed for close shots */
+        public static final double SHOOT_CLOSE_SPEED = -0.40;
 
-        /** Shooter speed for low goal */
-        public static final double SHOOT_LOW_SPEED = -0.35;
+        /** Shooter speed for far shots */
+        public static final double SHOOT_FAR_SPEED = -0.35;
 
         public static final double HOOD_KP = 0.06;
         public static final double HOOD_KF = 0.02;
@@ -114,5 +116,10 @@ public final class Constants {
         public static final double HOOD_KD = 0.0;
 
         public static final double HOOD_SETPOINT = -1.0;
+    }
+
+    public static final class IntakeConstants {
+        public static final DoubleSolenoid.Value INTAKE_UP = DoubleSolenoid.Value.kReverse;
+        public static final DoubleSolenoid.Value INTAKE_DOWN = DoubleSolenoid.Value.kForward;
     }
 }

@@ -1,17 +1,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class ShootLow extends CommandBase {
+public class ShootFar extends CommandBase {
 
     private final ShooterSubsystem _shooter;
     private final IntakeSubsystem _intake;
 
-    public ShootLow(ShooterSubsystem shooter, IntakeSubsystem intake) {
+    public ShootFar(ShooterSubsystem shooter, IntakeSubsystem intake) {
         _shooter = shooter;
         _intake = intake;
         addRequirements(
@@ -23,7 +22,7 @@ public class ShootLow extends CommandBase {
     @Override
     public void initialize() {
         _shooter.setHoodLow();
-        _shooter.update(ShooterConstants.SHOOT_LOW_SPEED);
+        _shooter.update(ShooterConstants.SHOOT_FAR_SPEED);
         _intake.clearBallFed();
     }
 

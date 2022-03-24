@@ -27,7 +27,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private IntakeStates _currentState;
 
-    private final DoubleSolenoid.Value INTAKE_UP = DoubleSolenoid.Value.kForward;
 
     public IntakeSubsystem(DoubleSolenoid intakeSolenoid) {
         _intake = new CANSparkMax(Constants.CanIds.INTAKE, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -65,6 +64,7 @@ public class IntakeSubsystem extends SubsystemBase {
         _currentUpperSensorState = false;
         _currentState = IntakeStates.Idle;
         _wasBallFed = false;
+        _intakeSolenoid.set(Constants.IntakeConstants.INTAKE_UP);
     }
 
     @Override
@@ -138,13 +138,17 @@ public class IntakeSubsystem extends SubsystemBase {
     /**
      * Set the intake to eject balls
      * @param ejectAll If true, all intake, singulate, and index motors will eject. If false, only the lower intake and singulate motors will eject
+     * Eject is only allowed with the intake down otherwise weird things may happen
      */
     public void eject(boolean ejectAll) {
-        if (ejectAll) {
-            this.ejectAll();
-        }
-        else {
-            this.ejectLower();
+        if (_intakeSolenoid.get() == Constants.IntakeConstants.INTAKE_DOWN)
+        {
+            if (ejectAll) {
+                this.ejectAll();
+            }
+            else {
+                this.ejectLower();
+            }
         }
     }
 
@@ -176,7 +180,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void intake() {
 
         // If the intake is up and the operator wants to intake, lower the intake first
-        if (_intakeSolenoid.get() == INTAKE_UP) {
+        if (_intakeSolenoid.get() == Constants.IntakeConstants.INTAKE_UP) {
             this.lowerIntake();
         }
 

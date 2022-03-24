@@ -131,6 +131,10 @@ public class RobotInput {
         return _operatorController.getPOV() == 180;
     }
 
+    private boolean operatorPovAny() {
+        return _operatorController.getPOV() != -1;
+    }
+
     /**
      * Apply polynomial curve to input. This can be used to make controls more sensitive at lower speeds
      * @param raw The raw input to be modified

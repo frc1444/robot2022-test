@@ -16,8 +16,8 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.commands.QuickLeft;
 import frc.robot.commands.QuickRight;
-import frc.robot.commands.ShootHigh;
-import frc.robot.commands.ShootLow;
+import frc.robot.commands.ShootFar;
+import frc.robot.commands.ShootClose;
 import frc.robot.commands.Stop;
 
 /**
@@ -36,8 +36,6 @@ public class RobotContainer {
   private final DriveSubsystem _driveSubsystem;
   private final IntakeSubsystem _intakeSubsystem;
   private final ShooterSubsystem _shooterSubsystem;
-
-  private double _shooterSetpoint;
 
   private final RobotInput _robotInput = new RobotInput(
     new PS4Controller(Constants.Controller.PORT_PS4_DRIVER),
@@ -84,7 +82,6 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    _shooterSetpoint = Constants.ShooterConstants.SHOOT_HIGH_SPEED;
   }
 
   /**
@@ -112,9 +109,9 @@ public class RobotContainer {
     ejectTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intakeSubsystem.eject(true));
     ejectLowerTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intakeSubsystem.eject(false));
     shootLowTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth)
-      .whileActiveContinuous(new ShootLow(_shooterSubsystem, _intakeSubsystem));
+      .whileActiveContinuous(new ShootClose(_shooterSubsystem, _intakeSubsystem));
     shootHighTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth)
-      .whileActiveContinuous(new ShootHigh(_shooterSubsystem, _intakeSubsystem));
+      .whileActiveContinuous(new ShootFar(_shooterSubsystem, _intakeSubsystem));
     raiseIntakeTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intakeSubsystem.raiseIntake());
     lowerIntakeTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intakeSubsystem.lowerIntake());
     stopTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(new Stop(_shooterSubsystem, _intakeSubsystem));
