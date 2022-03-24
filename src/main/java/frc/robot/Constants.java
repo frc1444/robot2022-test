@@ -116,10 +116,14 @@ public final class Constants {
         public static final double HOOD_KD = 0.0;
 
         public static final double HOOD_SETPOINT = -1.0;
+
+        public static final DoubleSolenoid.Value HOOD_LOW = DoubleSolenoid.Value.kForward;
+        public static final DoubleSolenoid.Value HOOD_HIGH = DoubleSolenoid.Value.kReverse;
     }
 
     public static final class IntakeConstants {
         public static final DoubleSolenoid.Value INTAKE_UP = DoubleSolenoid.Value.kReverse;
         public static final DoubleSolenoid.Value INTAKE_DOWN = DoubleSolenoid.Value.kForward;
+        public static final double INTAKE_RAMP_RATE = 0.3;
     }
 }

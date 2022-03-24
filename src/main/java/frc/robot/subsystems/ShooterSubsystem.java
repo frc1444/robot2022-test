@@ -29,11 +29,11 @@ public class ShooterSubsystem extends SubsystemBase {
         _shooter.config_kD(Constants.SLOT_INDEX, Constants.ShooterConstants.SHOOTER_KD);
         _shooter.configClosedloopRamp(Constants.ShooterConstants.SHOOTER_RAMP_RATE);
         _shooter.configOpenloopRamp(Constants.ShooterConstants.SHOOTER_RAMP_RATE);
-        _shooter.configPeakOutputForward(0.0);
+        _shooter.configPeakOutputForward(0.0); // Prevent shooter from running the wrong direction
 
         _hood.configFactoryDefault();
         _hood.setNeutralMode(NeutralMode.Coast);
-        _hood.configPeakOutputForward(0.0);
+        _hood.configPeakOutputForward(0.0); // Prevent hood from running the wrong direction
         _hood.config_kP(Constants.SLOT_INDEX, Constants.ShooterConstants.HOOD_KP);
         _hood.config_kF(Constants.SLOT_INDEX, Constants.ShooterConstants.HOOD_KF);
 
@@ -57,11 +57,11 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setHoodLow() {
-        _hoodSolenoid.set(DoubleSolenoid.Value.kForward);
+        _hoodSolenoid.set(Constants.ShooterConstants.HOOD_LOW);
     }
 
     public void setHoodHigh() {
-        _hoodSolenoid.set(DoubleSolenoid.Value.kReverse);
+        _hoodSolenoid.set(Constants.ShooterConstants.HOOD_HIGH);
     }
 
     public boolean isAtSetpoint() {

@@ -54,7 +54,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         // Set a slight ramp on these motors since they are geared low and quick reversals are likely
         for (CANSparkMax spark : new CANSparkMax[] {_intake, _singulateLeft, _singulateRight }) {
-            spark.setOpenLoopRampRate(0.3);
+            spark.setOpenLoopRampRate(Constants.IntakeConstants.INTAKE_RAMP_RATE);
         }
 
         // Start with no balls
