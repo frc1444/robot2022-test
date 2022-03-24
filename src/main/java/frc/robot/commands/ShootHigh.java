@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -22,7 +23,8 @@ public class ShootHigh extends CommandBase {
     @Override
     public void initialize() {
         _shooter.setHoodHigh();
-        _shooter.update(Constants.SHOOT_HIGH_SPEED);
+        _shooter.update(ShooterConstants.SHOOT_HIGH_SPEED);
+        _intake.clearBallFed();
     }
 
     @Override

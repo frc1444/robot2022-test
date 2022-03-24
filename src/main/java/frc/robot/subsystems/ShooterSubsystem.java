@@ -14,8 +14,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final DoubleSolenoid _hoodSolenoid;
     private double _shooterSetpoint;
 
-    private final double HOOD_SETPOINT = -1.0;
-    private final double SHOOTER_ERROR_LIMIT = 200;
+
 
     public ShooterSubsystem(DoubleSolenoid hoodSolenoid) {
         _shooter = new TalonFX(Constants.CanIds.SHOOTER);
@@ -24,19 +23,19 @@ public class ShooterSubsystem extends SubsystemBase {
         
         _shooter.configFactoryDefault();
         _shooter.setNeutralMode(NeutralMode.Coast);
-        _shooter.config_kP(Constants.SLOT_INDEX, 0.15);
-        _shooter.config_kF(Constants.SLOT_INDEX, 0.04);
-        _shooter.config_kI(Constants.SLOT_INDEX, 0.0001);
-        _shooter.config_kD(Constants.SLOT_INDEX, 0.01);
-        _shooter.configClosedloopRamp(.40);
-        _shooter.configOpenloopRamp(.40);
+        _shooter.config_kP(Constants.SLOT_INDEX, Constants.ShooterConstants.SHOOTER_KP);
+        _shooter.config_kF(Constants.SLOT_INDEX, Constants.ShooterConstants.SHOOTER_KF);
+        _shooter.config_kI(Constants.SLOT_INDEX, Constants.ShooterConstants.SHOOTER_KI);
+        _shooter.config_kD(Constants.SLOT_INDEX, Constants.ShooterConstants.SHOOTER_KD);
+        _shooter.configClosedloopRamp(Constants.ShooterConstants.SHOOTER_RAMP_RATE);
+        _shooter.configOpenloopRamp(Constants.ShooterConstants.SHOOTER_RAMP_RATE);
         _shooter.configPeakOutputForward(0.0);
 
         _hood.configFactoryDefault();
         _hood.setNeutralMode(NeutralMode.Coast);
         _hood.configPeakOutputForward(0.0);
-        _hood.config_kP(Constants.SLOT_INDEX, 0.06);
-        _hood.config_kF(Constants.SLOT_INDEX, 0.02);
+        _hood.config_kP(Constants.SLOT_INDEX, Constants.ShooterConstants.HOOD_KP);
+        _hood.config_kF(Constants.SLOT_INDEX, Constants.ShooterConstants.HOOD_KF);
 
         _shooterSetpoint = 0.0;
     }
@@ -50,7 +49,9 @@ public class ShooterSubsystem extends SubsystemBase {
             _shooterSetpoint = FalconVelocityConverter.percentToVelocity(speed);
             _shooter.set(TalonFXControlMode.Velocity, _shooterSetpoint);
 
-            var hoodSetpoint = FalconVelocityConverter.percentToVelocity(HOOD_SETPOINT);
+            var hoodSetpoint = FalconVelocityConverter.percentToVelocity(
+                Constants.ShooterConstants.HOOD_SETPOINT
+            );
             _hood.set(TalonFXControlMode.Velocity, hoodSetpoint);
         }
     }
@@ -65,7 +66,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public boolean isAtSetpoint() {
         var rpmError = Math.abs(_shooter.getSelectedSensorVelocity() - _shooterSetpoint);
-        return rpmError < SHOOTER_ERROR_LIMIT;
+        return rpmError < Constants.ShooterConstants.SHOOTER_ERROR_LIMIT;
     }
 
     public double getSetpoint() {

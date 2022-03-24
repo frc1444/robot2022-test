@@ -67,15 +67,21 @@ public class RobotInput {
     }
 
     public Trigger getQuickLeft() {
-        // If single controller mode, there won't be quick move triggers, so just return 0
-        return new JoystickButton(_driveController, 
-            _singleControllerMode ? 0 : PS4Controller.Button.kSquare.value);
+        if (_singleControllerMode) {
+            return new Trigger(this::driverPovEquals90);
+        }
+        else {
+            return new JoystickButton(_driveController, PS4Controller.Button.kSquare.value);
+        }
     }
 
     public Trigger getQuickRight() {
-        // If single controller mode, there won't be quick move triggers, so just return 0
-        return new JoystickButton(_driveController, 
-            _singleControllerMode ? 0 : PS4Controller.Button.kCircle.value);
+        if (_singleControllerMode) {
+            return new Trigger(this::driverPovEquals270);
+        }
+        else {
+            return new JoystickButton(_driveController, PS4Controller.Button.kCircle.value);
+        }
     }
 
     public double getForward() {
@@ -87,7 +93,7 @@ public class RobotInput {
         //    return 0.0;
         //}
 
-        return applyInputCurve(raw, Constants.FORWARD_INPUT_CURVE);
+        return applyInputCurve(raw, Constants.InputConstants.FORWARD_INPUT_CURVE);
     }
     public double getSteer() {
         if (!_driveController.isConnected()) {
@@ -98,15 +104,23 @@ public class RobotInput {
          //   return 0.0;
         //}
 
-        return applyInputCurve(raw, Constants.ROTATE_INPUT_CURVE);
+        return applyInputCurve(raw, Constants.InputConstants.ROTATE_INPUT_CURVE);
     }
 
     private boolean driverPovEquals0() {
         return _driveController.getPOV() == 0;
     }
 
+    private boolean driverPovEquals90() {
+        return _driveController.getPOV() == 90;
+    }
+
     private boolean driverPovEquals180() {
         return _driveController.getPOV() == 180;
+    }
+
+    private boolean driverPovEquals270() {
+        return _driveController.getPOV() == 270;
     }
 
     private boolean operatorPovEquals0() {

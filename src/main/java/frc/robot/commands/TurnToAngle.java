@@ -2,15 +2,20 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
+import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class TurnToAngle extends PIDCommand {
     public TurnToAngle(double angle, DriveSubsystem drive) {
         super(
-            new PIDController(0.0005, 0.0, 0.0),
+            new PIDController(
+                Constants.DriveConstants.TURN_KP, 
+                Constants.DriveConstants.TURN_KI, 
+                Constants.DriveConstants.TURN_KD
+            ),
             drive::getHeading,
             angle,
-            output -> drive.arcadeDrive(0.0, output),
+            output -> drive.curvatureDrive(0.0, output),
             drive
         );
 
@@ -19,7 +24,10 @@ public class TurnToAngle extends PIDCommand {
     
         // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
         // setpoint before it is considered as having reached the reference
-        getController().setTolerance(5.0, 10.0);
+        getController().setTolerance(
+            Constants.DriveConstants.TURN_TOLERANCE_DEG, 
+            Constants.DriveConstants.TURN_RATE_TOLERANCE
+        );
 
     }    
 

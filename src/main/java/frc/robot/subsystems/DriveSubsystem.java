@@ -10,10 +10,12 @@ import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.util.FalconVelocityConverter;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -42,11 +44,11 @@ public class DriveSubsystem extends SubsystemBase {
             talonFX.configFactoryDefault();
             talonFX.setNeutralMode(NeutralMode.Coast);
 
-            talonFX.config_kP(Constants.SLOT_INDEX, 0.12);
-            talonFX.config_kF(Constants.SLOT_INDEX, 0.06);
-            talonFX.configClosedloopRamp(.40);
-            talonFX.configOpenloopRamp(.40);
-            talonFX.configNeutralDeadband(0.04);    // in case we don't want to use the manual deadband in RobotInput
+            talonFX.config_kP(Constants.SLOT_INDEX, Constants.DriveConstants.DRIVE_KP);
+            talonFX.config_kF(Constants.SLOT_INDEX, Constants.DriveConstants.DRIVE_KF);
+            talonFX.configClosedloopRamp(DriveConstants.RAMP_RATE);
+            talonFX.configOpenloopRamp(DriveConstants.RAMP_RATE);
+            talonFX.configNeutralDeadband(DriveConstants.DEAD_ZONE);
         }
 
         _rightDrive.setInverted(TalonFXInvertType.Clockwise);
@@ -54,16 +56,14 @@ public class DriveSubsystem extends SubsystemBase {
         _gyro = new Pigeon2(Constants.CanIds.PIGEON_IMU);
         _gyro.configFactoryDefault();
 
-        // TODO these values need to be set dynamically for different autonomous modes
-        _odomemtry = new DifferentialDriveOdometry(new Rotation2d(_gyro.getYaw()), new Pose2d(0.0, 0.0, new Rotation2d()));
+        resetEncoders();
+        _odomemtry = new DifferentialDriveOdometry(new Rotation2d(getHeadingRadians()));
     }
 
     @Override
     public void periodic() {
-        // update odometry      
-
         _odomemtry.update(
-            new Rotation2d(getHeading()), 
+            new Rotation2d(getHeadingRadians()), 
             _leftDrive.getSelectedSensorPosition(), 
             _rightDrive.getSelectedSensorPosition()
         );
@@ -75,9 +75,7 @@ public class DriveSubsystem extends SubsystemBase {
        * @param fwd the commanded forward movement
        * @param rot the commanded rotation
        */
-     public void arcadeDrive(double fwd, double rot) {
-
-
+    public void curvatureDrive(double fwd, double rot) {
 
          // We can easily change this to arcade drive if we feel like it
          DifferentialDrive.WheelSpeeds speeds = DifferentialDrive.curvatureDriveIK(fwd, rot, true);
@@ -88,11 +86,17 @@ public class DriveSubsystem extends SubsystemBase {
              _leftDrive.set(TalonFXControlMode.Velocity, FalconVelocityConverter.percentToVelocity(speeds.left));
          //}
          //if (speeds.right == 0.0) {
-             _rightDrive.neutralOutput();
+           //  _rightDrive.neutralOutput();
          //} else {
              _rightDrive.set(TalonFXControlMode.Velocity, FalconVelocityConverter.percentToVelocity(speeds.right));
          //}
     }
+
+    public void tankDriveVolts(double leftVolts, double rightVolts) {
+        _leftDrive.set(TalonFXControlMode.Current, leftVolts);
+        _rightDrive.set(TalonFXControlMode.Current, rightVolts);
+    }
+
 
     public void shiftLow() {
         _shiftSolenoid.set(DoubleSolenoid.Value.kForward);
@@ -100,6 +104,19 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void shiftHigh() {
         _shiftSolenoid.set(DoubleSolenoid.Value.kReverse);
+    }
+
+    public Pose2d getPose() {
+        return _odomemtry.getPoseMeters();
+    }
+
+    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        return new DifferentialDriveWheelSpeeds(_leftDrive.getSelectedSensorVelocity(), _rightDrive.getSelectedSensorVelocity());
+    }
+
+    public void resetOdometry(Pose2d pose) {
+        resetEncoders();
+        _odomemtry.resetPosition(pose, new Rotation2d(getHeadingRadians()));
     }
 
     public double getSetpoint() {
@@ -112,5 +129,28 @@ public class DriveSubsystem extends SubsystemBase {
 
     public double getHeading() {
         return Math.IEEEremainder(_gyro.getYaw(), 360);
+    }
+
+    public double getHeadingRadians() {
+        return Math.toRadians(getHeading());
+    }
+
+    public double getAverageEncoderDistance() {
+        return (_leftDrive.getSelectedSensorPosition() + _rightDrive.getSelectedSensorPosition()) / 2.0;
+    }
+
+    public void zeroHeading() {
+        _gyro.setYaw(0.0);
+    }
+
+    public double getTurnRate() {
+        double[] xyz = new double[3];
+        _gyro.getRawGyro(xyz);
+        return -xyz[2];
+    }
+
+    private void resetEncoders() {
+        _leftDrive.setSelectedSensorPosition(0);
+        _rightDrive.setSelectedSensorPosition(0);
     }
 }

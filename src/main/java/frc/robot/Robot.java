@@ -69,9 +69,9 @@ public class Robot extends TimedRobot {
             _autonomousCommand.cancel();
         }
 
-        SmartDashboard.putNumber("Shooter kP", 0.15);
-        SmartDashboard.putNumber("Shooter kI", 0.0001);
-        SmartDashboard.putNumber("Shooter kD", 0.01);
+        SmartDashboard.putNumber("Shooter kP", Constants.ShooterConstants.SHOOTER_KP);
+        SmartDashboard.putNumber("Shooter kI", Constants.ShooterConstants.SHOOTER_KI);
+        SmartDashboard.putNumber("Shooter kD", Constants.ShooterConstants.SHOOTER_KD);
     }
 
     /** This function is called periodically during operator control. */
@@ -83,10 +83,10 @@ public class Robot extends TimedRobot {
         //SmartDashboard.putNumber("Drive Veloctiy", _robotContainer.getDriveVelocity());
         SmartDashboard.putNumber("Robot Angle", _robotContainer.getAngle());
 
-        var kP = SmartDashboard.getNumber("Shooter kP", 0.15);
-        var kI = SmartDashboard.getNumber("Shooter kI", 0.0001);
-        var kD = SmartDashboard.getNumber("Shooter kD", 0.01);
-
+        var kP = SmartDashboard.getNumber("Shooter kP", Constants.ShooterConstants.SHOOTER_KP);
+        var kI = SmartDashboard.getNumber("Shooter kI", Constants.ShooterConstants.SHOOTER_KI);
+        var kD = SmartDashboard.getNumber("Shooter kD", Constants.ShooterConstants.SHOOTER_KD);
+        
         _robotContainer.updateShooterPid(kP, kI, kD);
 
     }

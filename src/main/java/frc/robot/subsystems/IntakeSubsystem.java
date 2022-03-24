@@ -58,7 +58,7 @@ public class IntakeSubsystem extends SubsystemBase {
             spark.setOpenLoopRampRate(0.3);
         }
 
-        // Start with no balls and intake raised
+        // Start with no balls
         _previousLowerSensorState = false;
         _previousUpperSensorState = false;
         _currentLowerSensorState = false;
@@ -220,6 +220,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public boolean wasBallFed() {
         return _wasBallFed;
+    }
+
+    public void clearBallFed() {
+        _wasBallFed = false;
     }
 
     /**

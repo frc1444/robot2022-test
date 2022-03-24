@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PneumaticHub;
@@ -36,6 +37,8 @@ public class RobotContainer {
   private final IntakeSubsystem _intakeSubsystem;
   private final ShooterSubsystem _shooterSubsystem;
 
+  private double _shooterSetpoint;
+
   private final RobotInput _robotInput = new RobotInput(
     new PS4Controller(Constants.Controller.PORT_PS4_DRIVER),
     new PS4Controller(Constants.Controller.PORT_PS4_OPERATOR));
@@ -48,38 +51,40 @@ public class RobotContainer {
    */
   public RobotContainer() {
 
-  _pneumaticsHub = new PneumaticHub(Constants.CanIds.PNEUMATIC_HUB);
+    _pneumaticsHub = new PneumaticHub(Constants.CanIds.PNEUMATIC_HUB);
 
-  _driveSubsystem = new DriveSubsystem(
-    _pneumaticsHub.makeDoubleSolenoid(
-      Constants.PneumaticPortIds.SHIFTER_FWD, 
-      Constants.PneumaticPortIds.SHIFTER_REV)
-  );
+    _driveSubsystem = new DriveSubsystem(
+      _pneumaticsHub.makeDoubleSolenoid(
+        Constants.PneumaticPortIds.SHIFTER_FWD, 
+        Constants.PneumaticPortIds.SHIFTER_REV)
+    );
 
-  _intakeSubsystem = new IntakeSubsystem(
-    _pneumaticsHub.makeDoubleSolenoid(
-      Constants.PneumaticPortIds.INTAKE_FWD,
-      Constants.PneumaticPortIds.INTAKE_REV
-    )
-  );
+    _intakeSubsystem = new IntakeSubsystem(
+      _pneumaticsHub.makeDoubleSolenoid(
+        Constants.PneumaticPortIds.INTAKE_FWD,
+        Constants.PneumaticPortIds.INTAKE_REV
+      )
+    );
 
-  _shooterSubsystem = new ShooterSubsystem(
-    _pneumaticsHub.makeDoubleSolenoid(
-      Constants.PneumaticPortIds.SHOOTER_HOOD_FWD,
-      Constants.PneumaticPortIds.SHOOTER_HOOD_REV
-    )
-  );
-  
-  _driveSubsystem.setDefaultCommand(
-    new RunCommand(() -> _driveSubsystem.arcadeDrive(_robotInput.getForward(), _robotInput.getSteer())
-    , _driveSubsystem));
+    _shooterSubsystem = new ShooterSubsystem(
+      _pneumaticsHub.makeDoubleSolenoid(
+        Constants.PneumaticPortIds.SHOOTER_HOOD_FWD,
+        Constants.PneumaticPortIds.SHOOTER_HOOD_REV
+      )
+    );
+    
+    _driveSubsystem.setDefaultCommand(
+      new RunCommand(() -> _driveSubsystem.curvatureDrive(_robotInput.getForward(), _robotInput.getSteer())
+      , _driveSubsystem));
 
-  _intakeSubsystem.setDefaultCommand(
-    new RunCommand(() -> _intakeSubsystem.update()
-    , _intakeSubsystem));
+    _intakeSubsystem.setDefaultCommand(
+      new RunCommand(() -> _intakeSubsystem.update()
+      , _intakeSubsystem));
 
-  // Configure the button bindings
-  configureButtonBindings();
+    // Configure the button bindings
+    configureButtonBindings();
+
+    _shooterSetpoint = Constants.ShooterConstants.SHOOT_HIGH_SPEED;
   }
 
   /**
@@ -103,19 +108,23 @@ public class RobotContainer {
     final var quickLeftTrigger = _robotInput.getQuickLeft();
     final var quickRightTrigger = _robotInput.getQuickRight();
 
-    intakeTrigger.whenActive(() -> _intakeSubsystem.intake());
-    ejectTrigger.whenActive(() -> _intakeSubsystem.eject(true));
-    ejectLowerTrigger.whenActive(() -> _intakeSubsystem.eject(false));
-    shootLowTrigger.whileActiveContinuous(new ShootLow(_shooterSubsystem, _intakeSubsystem));
-    shootHighTrigger.whileActiveContinuous(new ShootHigh(_shooterSubsystem, _intakeSubsystem));
-    raiseIntakeTrigger.whenActive(() -> _intakeSubsystem.raiseIntake());
-    lowerIntakeTrigger.whenActive(() -> _intakeSubsystem.lowerIntake());
-    stopTrigger.whenActive(new Stop(_shooterSubsystem, _intakeSubsystem));
+    intakeTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intakeSubsystem.intake());
+    ejectTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intakeSubsystem.eject(true));
+    ejectLowerTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intakeSubsystem.eject(false));
+    shootLowTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth)
+      .whileActiveContinuous(new ShootLow(_shooterSubsystem, _intakeSubsystem));
+    shootHighTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth)
+      .whileActiveContinuous(new ShootHigh(_shooterSubsystem, _intakeSubsystem));
+    raiseIntakeTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intakeSubsystem.raiseIntake());
+    lowerIntakeTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intakeSubsystem.lowerIntake());
+    stopTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(new Stop(_shooterSubsystem, _intakeSubsystem));
 
-    shiftHighTrigger.whenActive(() -> _driveSubsystem.shiftHigh());
-    shiftLowTrigger.whenActive(() -> _driveSubsystem.shiftLow());
-    quickLeftTrigger.whileActiveContinuous(new QuickLeft(_driveSubsystem));
-    quickRightTrigger.whileActiveContinuous(new QuickRight(_driveSubsystem));
+    shiftHighTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _driveSubsystem.shiftHigh());
+    shiftLowTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _driveSubsystem.shiftLow());
+    quickLeftTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth)
+      .whileActiveContinuous(new QuickLeft(_driveSubsystem).withTimeout(5));
+    quickRightTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth)
+      .whileActiveContinuous(new QuickRight(_driveSubsystem).withTimeout(5));
   }
 
   /**

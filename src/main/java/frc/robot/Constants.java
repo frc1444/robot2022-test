@@ -18,20 +18,20 @@ public final class Constants {
     /** A constant needed for some CTRE methods that should just stay 0 */
     public static final int SLOT_INDEX = 0;
 
-    /** Polynomial curve to apply to drive inputs - a value great than 1 will make the input less sensitive with small inputs
-     *  i.e. smoother control when moving slowly
-    */
-    public static final int FORWARD_INPUT_CURVE = 3;
-    public static final int ROTATE_INPUT_CURVE = 3;
+    /** Amount of time to debounce input triggers in seconds */
+    public static final double INPUT_DEBOUNCE = 0.05;
 
-    /** Deadzone for drive controllers */
-    public static final double DRIVE_JOYSTICK_DEADZONE = 0.05;
+    public final class InputConstants {
 
-    /** Shooter speed for high goal */
-    public static final double SHOOT_HIGH_SPEED = -0.5;
+        /** Polynomial curve to apply to drive inputs - a value great than 1 will make the input less sensitive with small inputs
+         *  i.e. smoother control when moving slowly
+        */
+        public static final int FORWARD_INPUT_CURVE = 3;
+        public static final int ROTATE_INPUT_CURVE = 3;
 
-    /** Shooter speed for low goal */
-    public static final double SHOOT_LOW_SPEED = -0.3;
+        /** Deadzone for drive controllers */
+        public static final double DRIVE_JOYSTICK_DEADZONE = 0.05;
+    }
 
     public static final class CanIds {
 
@@ -75,13 +75,44 @@ public final class Constants {
         public static final int UPPER_BALL_SENSOR = 1;
     }
 
-    /**
-     * Button mappings for an Extreme 3D Pro Joystick
-     */
-    public static final class ControllerExtreme {
-        public static int POV = 0;
+    public static final class DriveConstants {
+        public static final double DRIVE_KP = 0.12;
+        public static final double DRIVE_KF = 0.06;
+    
+        public static final double TURN_KP = 0.001;
+        public static final double TURN_KI = 0.0;
+        public static final double TURN_KD = 0.0;
 
-        public static int GRID_MIDDLE_LEFT = 8;
-        public static int GRID_MIDDLE_RIGHT = 9;
+        public static final double STABILIZATION_KP = 0.001;
+        public static final double STABILIZATION_KI = 0.0;
+        public static final double STABILIZATION_KD = 0.0;
+
+        public static final double TURN_TOLERANCE_DEG = 5;
+        public static final double TURN_RATE_TOLERANCE = 10;    // degrees per second
+
+        public static final double RAMP_RATE = 0.4;
+        public static final double DEAD_ZONE = 0.04;
+    }
+
+    public static final class ShooterConstants {
+        public static final double SHOOTER_KP = 0.15;
+        public static final double SHOOTER_KF = 0.04;
+        public static final double SHOOTER_KI = 0.00005;
+        public static final double SHOOTER_KD = 0.1;
+        public static final double SHOOTER_RAMP_RATE = 0.4;        
+        public static final double SHOOTER_ERROR_LIMIT = 200;
+
+            /** Shooter speed for high goal */
+        public static final double SHOOT_HIGH_SPEED = -0.40;
+
+        /** Shooter speed for low goal */
+        public static final double SHOOT_LOW_SPEED = -0.35;
+
+        public static final double HOOD_KP = 0.06;
+        public static final double HOOD_KF = 0.02;
+        public static final double HOOD_KI = 0.0;
+        public static final double HOOD_KD = 0.0;
+
+        public static final double HOOD_SETPOINT = -1.0;
     }
 }
