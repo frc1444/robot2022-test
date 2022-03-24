@@ -96,6 +96,15 @@ public final class Constants {
         public static final double RAMP_RATE = 0.4;
         public static final double DEAD_ZONE = 0.04;
 
+        public static final double WHEEL_DIAMETER_METERS = 0.1524;
+        public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER_METERS * Math.PI;
+
+        public static final DoubleSolenoid.Value SHIFT_LOW = DoubleSolenoid.Value.kReverse;
+        public static final DoubleSolenoid.Value SHIFT_HIGH = DoubleSolenoid.Value.kForward;
+
+        public static final double LOW_GEARING = 16.363;
+        public static final double HIGH_GEARING = 7.954;
+
         /** The constants below are used for trajectory and path planning.
          * They are based on the "Path Planning" tutorial and as such use the same naming
          * convention for consistency.
@@ -108,7 +117,7 @@ public final class Constants {
         /** These constants were determined using the WPILib sysid tool */
         public static final double ksVolts = 0.64488;
         public static final double kvVoltSecondsPerMeter = 3.4659;
-        public static final double kaVoltSecondSquarePerMeter = 0.35067;
+        public static final double kaVoltSecondsSquaredPerMeter = 0.35067;
         public static final double kPDriveVel = 0.035411;
 
         public static final double kMaxSpeedMetersPerSecond = 3.0;

@@ -4,16 +4,34 @@
 
 package frc.robot;
 
+import java.util.List;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.autonomous.LowerIntake;
+import frc.robot.autonomous.StopDrive;
 import frc.robot.commands.QuickLeft;
 import frc.robot.commands.QuickRight;
 import frc.robot.commands.ShootFar;
@@ -129,9 +147,54 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return _autoChooser.getSelected();
+  public Command getAutonomousCommand(Trajectory traj) {
+    _driveSubsystem.zeroHeading();
+
+    var autoVoltageConstraint =
+      new DifferentialDriveVoltageConstraint(
+          new SimpleMotorFeedforward(
+              Constants.DriveConstants.ksVolts,
+              Constants.DriveConstants.kvVoltSecondsPerMeter,
+              Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
+              Constants.DriveConstants.kDriveKinematics,
+              10);
+
+    // Create config for trajectory
+    TrajectoryConfig config =
+      new TrajectoryConfig(
+        Constants.DriveConstants.kMaxSpeedMetersPerSecond,
+        Constants.DriveConstants.kMaxAccelerationMetersPerSecondSquared)
+          .setKinematics(Constants.DriveConstants.kDriveKinematics) // Add kinematics to ensure max speed is actually obeyed
+          .addConstraint(autoVoltageConstraint) // Apply the voltage constraint
+          .addConstraint(new CentripetalAccelerationConstraint(1.0));
+
+    RamseteCommand ramseteCommand =
+      new RamseteCommand(
+        traj,
+        _driveSubsystem::getPose,
+        new RamseteController(Constants.DriveConstants.kRamseteB, Constants.DriveConstants.kRamseteZeta),
+        new SimpleMotorFeedforward(
+          Constants.DriveConstants.ksVolts,
+          Constants.DriveConstants.kvVoltSecondsPerMeter,
+          Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
+          Constants.DriveConstants.kDriveKinematics,
+        _driveSubsystem::getWheelSpeeds,
+        new PIDController(Constants.DriveConstants.kPDriveVel, 0, 0),
+        new PIDController(Constants.DriveConstants.kPDriveVel, 0, 0),          
+        _driveSubsystem::tankDriveVolts, // RamseteCommand passes volts to the callback
+        _driveSubsystem
+      );
+
+    // Reset odometry to the starting pose of the trajectory.
+    _driveSubsystem.resetOdometry(traj.getInitialPose());
+
+    // Run path following command, then stop at the end.
+    //return ramseteCommand.andThen(() -> _driveSubsystem.tankDriveVolts(0, 0));
+    return ramseteCommand
+      .alongWith(new LowerIntake(_intakeSubsystem))
+      .andThen(new StopDrive(_driveSubsystem))
+      .andThen(new ShootFar(_shooterSubsystem, _intakeSubsystem))
+      .andThen(new ShootFar(_shooterSubsystem, _intakeSubsystem));
   }
 
   public double getShooterSetpoint() {
@@ -146,16 +209,16 @@ public class RobotContainer {
     return _driveSubsystem.getSetpoint();
   }
 
-  public double getDriveVelocity() {
-    return _driveSubsystem.getVelocity();
-  }
-
   public double getAngle() {
     return _driveSubsystem.getHeading();
   }
 
   public void updateShooterPid(double kP, double kI, double kD) {
     _shooterSubsystem.updatePid(kP, kI, kD);
+  }
+
+  public Pose2d getPose() {
+    return _driveSubsystem.getPose();
   }
   
 }
