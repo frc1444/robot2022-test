@@ -146,7 +146,6 @@ public class RobotContainer {
     var keySet = trajectories.keySet();
 
     for (var key : keySet) {
-
       _autoCommands.put(key,
         AutonomousCommandBuilder.buildAutoCommand(
           key, 

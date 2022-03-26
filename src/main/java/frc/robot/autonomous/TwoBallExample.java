@@ -55,7 +55,7 @@ public class TwoBallExample extends SequentialCommandGroup {
 
         addCommands(
             ramseteCommand.alongWith(
-                new RunCommand(() -> _intake.lowerIntake(), _intake)
+                new RunCommand(() -> _intake.intake(), _intake)
             ),
             new ShootFar(_shooter, _intake),
             new ShootFar(_shooter, _intake)
