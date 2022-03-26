@@ -11,11 +11,12 @@ public class RobotInput {
 
     private boolean _singleControllerMode;
 
-    public RobotInput(PS4Controller ps4Controller, PS4Controller operatorController) {
-        _driveController = ps4Controller;
+    public RobotInput(PS4Controller driverController, PS4Controller operatorController) {
+        _driveController = driverController;
         _operatorController = operatorController;
 
-        _singleControllerMode = !_operatorController.isConnected();
+        // This is pretty unreliable so disabling for now
+        _singleControllerMode = false;
     }
 
     public Trigger getIntakeButton() {
