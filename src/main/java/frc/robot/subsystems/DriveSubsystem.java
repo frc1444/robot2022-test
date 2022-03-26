@@ -97,8 +97,8 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void tankDriveVolts(double leftVolts, double rightVolts) {
-        _leftDrive.set(TalonFXControlMode.PercentOutput, leftVolts / 12.0);
-        _rightDrive.set(TalonFXControlMode.PercentOutput, rightVolts / 12.0);
+        _leftDrive.set(TalonFXControlMode.PercentOutput, leftVolts / DriveConstants.VOLTS_FOR_COMPENSATION);
+        _rightDrive.set(TalonFXControlMode.PercentOutput, rightVolts / DriveConstants.VOLTS_FOR_COMPENSATION);
     }
 
 
