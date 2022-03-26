@@ -20,6 +20,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.autonomous.AutonomousCommandBuilder;
+import frc.robot.commands.DoNothing;
 import frc.robot.commands.QuickLeft;
 import frc.robot.commands.QuickRight;
 import frc.robot.commands.ShootFar;
@@ -113,6 +114,8 @@ public class RobotContainer {
     final var raiseIntakeTrigger = _robotInput.getRaiseIntake();
     final var lowerIntakeTrigger = _robotInput.getLowerIntake();
     final var stopTrigger = _robotInput.getStopButton();
+    final var shooterSpinUpTrigger = _robotInput.getShooterSpinUp();
+    final var shooterSpinDownTrigger = _robotInput.getShooterSpinDown();
 
     final var shiftHighTrigger = _robotInput.getShiftHigh();
     final var shiftLowTrigger = _robotInput.getShiftLow();
@@ -129,6 +132,12 @@ public class RobotContainer {
     raiseIntakeTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intake.raiseIntake());
     lowerIntakeTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intake.lowerIntake());
     stopTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(new Stop(_shooter, _intake));
+    shooterSpinUpTrigger.debounce(Constants.INPUT_DEBOUNCE).whenActive(
+      () -> _shooter.update(Constants.ShooterConstants.SHOOT_FAR_SPEED)
+    );
+    shooterSpinDownTrigger.debounce(Constants.INPUT_DEBOUNCE).whenActive(
+      () -> _shooter.update(0.0)
+    );
 
     shiftHighTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _drive.shiftHigh());
     shiftLowTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _drive.shiftLow());
@@ -145,6 +154,8 @@ public class RobotContainer {
 
     var keySet = trajectories.keySet();
 
+    _autoChooser.setDefaultOption("do nothing", new DoNothing(_drive, _intake, _shooter));
+
     for (var key : keySet) {
       _autoCommands.put(key,
         AutonomousCommandBuilder.buildAutoCommand(
@@ -152,12 +163,8 @@ public class RobotContainer {
           trajectories.get(key), 
           _drive, _shooter, _intake)
       );
-
-      if (key.equals("do nothing")) {
-        _autoChooser.setDefaultOption(key, _autoCommands.get(key));
-      } else {
-        _autoChooser.addOption(key, _autoCommands.get(key));
-      }
+        
+      _autoChooser.addOption(key, _autoCommands.get(key));
     }
   }
 

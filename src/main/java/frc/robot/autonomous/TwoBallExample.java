@@ -4,8 +4,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.commands.ShootFar;
@@ -29,8 +29,6 @@ public class TwoBallExample extends SequentialCommandGroup {
         _intake = intake;
         _shooter = shooter;
 
-        _drive.zeroHeading();
-
         RamseteCommand ramseteCommand =
           new RamseteCommand(
             trajectory,
@@ -47,18 +45,16 @@ public class TwoBallExample extends SequentialCommandGroup {
             _drive::tankDriveVolts, // RamseteCommand passes volts to the callback
             _drive
           );
-    
-        // Reset odometry to the starting pose of the trajectory.
-        _drive.resetOdometry(trajectory.getInitialPose());
-        _drive.zeroHeading();
-    
 
         addCommands(
-            ramseteCommand.alongWith(
-                new RunCommand(() -> _intake.intake(), _intake)
-            ),
-            new ShootFar(_shooter, _intake),
-            new ShootFar(_shooter, _intake)
+          new InstantCommand(() -> _drive.resetOdometry(trajectory.getInitialPose()), _drive),
+          new InstantCommand(() -> _drive.zeroHeading(), _drive),
+          new InstantCommand(() -> _intake.lowerIntake(), _intake),
+          new InstantCommand(() -> _intake.intake(), _intake),
+          ramseteCommand,
+          new InstantCommand(() -> _drive.tankDriveVolts(0.0, 0.0), _drive),
+          new ShootFar(_shooter, _intake),
+          new ShootFar(_shooter, _intake)
         );
     }
 }

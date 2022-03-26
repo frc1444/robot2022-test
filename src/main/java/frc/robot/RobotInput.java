@@ -108,6 +108,16 @@ public class RobotInput {
         return applyInputCurve(raw, Constants.InputConstants.ROTATE_INPUT_CURVE);
     }
 
+    public Trigger getShooterSpinUp() {
+        return new Trigger(this::rightTriggerActive);
+
+    }
+
+    public Trigger getShooterSpinDown() {
+        return new Trigger(this::leftTriggerActive);
+
+    }
+
     private boolean driverPovEquals0() {
         return _driveController.getPOV() == 0;
     }
@@ -134,6 +144,22 @@ public class RobotInput {
 
     private boolean operatorPovAny() {
         return _operatorController.getPOV() != -1;
+    }
+
+    private boolean rightTriggerActive() {
+        if (_singleControllerMode) {
+            return _driveController.getR2Axis() > Constants.InputConstants.TRIGGER_ACTIVE_LIMIT;
+        } else {
+            return _operatorController.getR2Axis() > Constants.InputConstants.TRIGGER_ACTIVE_LIMIT;
+        }
+    }
+
+    private boolean leftTriggerActive() {
+        if (_singleControllerMode) {
+            return _driveController.getL2Axis() > Constants.InputConstants.TRIGGER_ACTIVE_LIMIT;
+        } else {
+            return _operatorController.getL2Axis() > Constants.InputConstants.TRIGGER_ACTIVE_LIMIT;
+        }
     }
 
     /**

@@ -46,7 +46,7 @@ public class DriveSubsystem extends SubsystemBase {
 
             talonFX.config_kP(Constants.SLOT_INDEX, Constants.DriveConstants.DRIVE_KP);
             talonFX.config_kF(Constants.SLOT_INDEX, Constants.DriveConstants.DRIVE_KF);
-            talonFX.configClosedloopRamp(DriveConstants.RAMP_RATE);
+            talonFX.configClosedloopRamp(DriveConstants.LOW_GEAR_RAMP_RATE);
             talonFX.configNeutralDeadband(DriveConstants.DEAD_ZONE);
             talonFX.configVoltageCompSaturation(DriveConstants.VOLTS_FOR_COMPENSATION);
             talonFX.enableVoltageCompensation(true);

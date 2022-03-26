@@ -29,11 +29,13 @@ public final class Constants {
         /** Polynomial curve to apply to drive inputs - a value great than 1 will make the input less sensitive with small inputs
          *  i.e. smoother control when moving slowly
         */
-        public static final int FORWARD_INPUT_CURVE = 3;
-        public static final int ROTATE_INPUT_CURVE = 3;
+        public static final double FORWARD_INPUT_CURVE = 3;
+        public static final double ROTATE_INPUT_CURVE = 1.5;
 
         /** Deadzone for drive controllers */
         public static final double DRIVE_JOYSTICK_DEADZONE = 0.05;
+
+        public static final double TRIGGER_ACTIVE_LIMIT = 0.5;
     }
 
     public static final class CanIds {
@@ -93,7 +95,8 @@ public final class Constants {
         public static final double TURN_TOLERANCE_DEG = 5;
         public static final double TURN_RATE_TOLERANCE = 10;    // degrees per second
 
-        public static final double RAMP_RATE = 0.4;
+        public static final double LOW_GEAR_RAMP_RATE = 0.2;
+        public static final double HIGH_GEAR_RAMP_RATE = 0.3;
         public static final double DEAD_ZONE = 0.04;
 
         public static final double WHEEL_DIAMETER_METERS = 0.1524;
