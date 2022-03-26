@@ -105,6 +105,8 @@ public final class Constants {
         public static final double LOW_GEARING = 16.363;
         public static final double HIGH_GEARING = 7.954;
 
+        public static final double VOLTS_FOR_COMPENSATION = 12.0;
+
         /** The constants below are used for trajectory and path planning.
          * They are based on the "Path Planning" tutorial and as such use the same naming
          * convention for consistency.

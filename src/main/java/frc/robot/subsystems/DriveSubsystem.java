@@ -47,14 +47,14 @@ public class DriveSubsystem extends SubsystemBase {
             talonFX.config_kP(Constants.SLOT_INDEX, Constants.DriveConstants.DRIVE_KP);
             talonFX.config_kF(Constants.SLOT_INDEX, Constants.DriveConstants.DRIVE_KF);
             talonFX.configClosedloopRamp(DriveConstants.RAMP_RATE);
-            //talonFX.configOpenloopRamp(DriveConstants.RAMP_RATE);
             talonFX.configNeutralDeadband(DriveConstants.DEAD_ZONE);
-            talonFX.configVoltageCompSaturation(12.0);
+            talonFX.configVoltageCompSaturation(DriveConstants.VOLTS_FOR_COMPENSATION);
             talonFX.enableVoltageCompensation(true);
         }
 
         _rightDrive.setInverted(TalonFXInvertType.Clockwise);
 
+        // Shift low to initialize state (needed for getting proper gear ratios)
         shiftLow();
 
         _gyro = new Pigeon2(Constants.CanIds.PIGEON_IMU);
