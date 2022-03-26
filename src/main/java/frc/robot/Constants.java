@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public final class Constants {
@@ -28,11 +29,13 @@ public final class Constants {
         /** Polynomial curve to apply to drive inputs - a value great than 1 will make the input less sensitive with small inputs
          *  i.e. smoother control when moving slowly
         */
-        public static final int FORWARD_INPUT_CURVE = 3;
-        public static final int ROTATE_INPUT_CURVE = 3;
+        public static final double FORWARD_INPUT_CURVE = 3;
+        public static final double ROTATE_INPUT_CURVE = 1.5;
 
         /** Deadzone for drive controllers */
         public static final double DRIVE_JOYSTICK_DEADZONE = 0.05;
+
+        public static final double TRIGGER_ACTIVE_LIMIT = 0.5;
     }
 
     public static final class CanIds {
@@ -92,8 +95,43 @@ public final class Constants {
         public static final double TURN_TOLERANCE_DEG = 5;
         public static final double TURN_RATE_TOLERANCE = 10;    // degrees per second
 
-        public static final double RAMP_RATE = 0.4;
+        public static final double LOW_GEAR_RAMP_RATE = 0.2;
+        public static final double HIGH_GEAR_RAMP_RATE = 0.3;
         public static final double DEAD_ZONE = 0.04;
+
+        public static final double WHEEL_DIAMETER_METERS = 0.1524;
+        public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER_METERS * Math.PI;
+
+        public static final DoubleSolenoid.Value SHIFT_LOW = DoubleSolenoid.Value.kReverse;
+        public static final DoubleSolenoid.Value SHIFT_HIGH = DoubleSolenoid.Value.kForward;
+
+        public static final double LOW_GEARING = 16.363;
+        public static final double HIGH_GEARING = 7.954;
+
+        public static final double VOLTS_FOR_COMPENSATION = 12.0;
+
+        /** The constants below are used for trajectory and path planning.
+         * They are based on the "Path Planning" tutorial and as such use the same naming
+         * convention for consistency.
+         */
+
+        public static final double kTrackWidthMeters = 0.6477;
+        public static final DifferentialDriveKinematics kDriveKinematics = 
+            new DifferentialDriveKinematics(kTrackWidthMeters);
+
+        /** These constants were determined using the WPILib sysid tool */
+        public static final double ksVolts = 0.64488;
+        public static final double kvVoltSecondsPerMeter = 3.4659;
+        public static final double kaVoltSecondsSquaredPerMeter = 0.35067;
+        public static final double kPDriveVel = 0.035411;
+
+        public static final double kMaxSpeedMetersPerSecond = 3.0;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
+
+        public static final double kRamseteB = 2;
+        public static final double kRamseteZeta = 0.7;
+
+        
     }
 
     public static final class ShooterConstants {

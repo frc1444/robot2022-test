@@ -11,11 +11,12 @@ public class RobotInput {
 
     private boolean _singleControllerMode;
 
-    public RobotInput(PS4Controller ps4Controller, PS4Controller operatorController) {
-        _driveController = ps4Controller;
+    public RobotInput(PS4Controller driverController, PS4Controller operatorController) {
+        _driveController = driverController;
         _operatorController = operatorController;
 
-        _singleControllerMode = !_operatorController.isConnected();
+        // This is pretty unreliable so disabling for now
+        _singleControllerMode = false;
     }
 
     public Trigger getIntakeButton() {
@@ -107,6 +108,16 @@ public class RobotInput {
         return applyInputCurve(raw, Constants.InputConstants.ROTATE_INPUT_CURVE);
     }
 
+    public Trigger getShooterSpinUp() {
+        return new Trigger(this::rightTriggerActive);
+
+    }
+
+    public Trigger getShooterSpinDown() {
+        return new Trigger(this::leftTriggerActive);
+
+    }
+
     private boolean driverPovEquals0() {
         return _driveController.getPOV() == 0;
     }
@@ -133,6 +144,22 @@ public class RobotInput {
 
     private boolean operatorPovAny() {
         return _operatorController.getPOV() != -1;
+    }
+
+    private boolean rightTriggerActive() {
+        if (_singleControllerMode) {
+            return _driveController.getR2Axis() > Constants.InputConstants.TRIGGER_ACTIVE_LIMIT;
+        } else {
+            return _operatorController.getR2Axis() > Constants.InputConstants.TRIGGER_ACTIVE_LIMIT;
+        }
+    }
+
+    private boolean leftTriggerActive() {
+        if (_singleControllerMode) {
+            return _driveController.getL2Axis() > Constants.InputConstants.TRIGGER_ACTIVE_LIMIT;
+        } else {
+            return _operatorController.getL2Axis() > Constants.InputConstants.TRIGGER_ACTIVE_LIMIT;
+        }
     }
 
     /**

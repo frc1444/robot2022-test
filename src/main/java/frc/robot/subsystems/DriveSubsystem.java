@@ -46,12 +46,16 @@ public class DriveSubsystem extends SubsystemBase {
 
             talonFX.config_kP(Constants.SLOT_INDEX, Constants.DriveConstants.DRIVE_KP);
             talonFX.config_kF(Constants.SLOT_INDEX, Constants.DriveConstants.DRIVE_KF);
-            talonFX.configClosedloopRamp(DriveConstants.RAMP_RATE);
-            talonFX.configOpenloopRamp(DriveConstants.RAMP_RATE);
+            talonFX.configClosedloopRamp(DriveConstants.LOW_GEAR_RAMP_RATE);
             talonFX.configNeutralDeadband(DriveConstants.DEAD_ZONE);
+            talonFX.configVoltageCompSaturation(DriveConstants.VOLTS_FOR_COMPENSATION);
+            talonFX.enableVoltageCompensation(true);
         }
 
         _rightDrive.setInverted(TalonFXInvertType.Clockwise);
+
+        // Shift low to initialize state (needed for getting proper gear ratios)
+        shiftLow();
 
         _gyro = new Pigeon2(Constants.CanIds.PIGEON_IMU);
         _gyro.configFactoryDefault();
@@ -64,8 +68,8 @@ public class DriveSubsystem extends SubsystemBase {
     public void periodic() {
         _odomemtry.update(
             new Rotation2d(getHeadingRadians()), 
-            _leftDrive.getSelectedSensorPosition(), 
-            _rightDrive.getSelectedSensorPosition()
+            getLeftSensorPosition(), 
+            getRightSensorPosition()
         );
     }
 
@@ -93,17 +97,17 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void tankDriveVolts(double leftVolts, double rightVolts) {
-        _leftDrive.set(TalonFXControlMode.Current, leftVolts);
-        _rightDrive.set(TalonFXControlMode.Current, rightVolts);
+        _leftDrive.set(TalonFXControlMode.PercentOutput, leftVolts / 12.0);
+        _rightDrive.set(TalonFXControlMode.PercentOutput, rightVolts / 12.0);
     }
 
 
     public void shiftLow() {
-        _shiftSolenoid.set(DoubleSolenoid.Value.kForward);
+        _shiftSolenoid.set(DriveConstants.SHIFT_LOW);
     }
 
     public void shiftHigh() {
-        _shiftSolenoid.set(DoubleSolenoid.Value.kReverse);
+        _shiftSolenoid.set(DriveConstants.SHIFT_HIGH);
     }
 
     public Pose2d getPose() {
@@ -111,7 +115,9 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-        return new DifferentialDriveWheelSpeeds(_leftDrive.getSelectedSensorVelocity(), _rightDrive.getSelectedSensorVelocity());
+        return new DifferentialDriveWheelSpeeds(
+            getLeftSensorVelocity(), 
+            getRightSensorVelocity());
     }
 
     public void resetOdometry(Pose2d pose) {
@@ -123,10 +129,6 @@ public class DriveSubsystem extends SubsystemBase {
         return (_leftDrive.getClosedLoopTarget() + _rightDrive.getClosedLoopTarget());
     }
 
-    public double getVelocity() {
-        return (_leftDrive.getSelectedSensorVelocity() + _rightDrive.getSelectedSensorVelocity());
-    }
-
     public double getHeading() {
         return Math.IEEEremainder(_gyro.getYaw(), 360);
     }
@@ -136,7 +138,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public double getAverageEncoderDistance() {
-        return (_leftDrive.getSelectedSensorPosition() + _rightDrive.getSelectedSensorPosition()) / 2.0;
+        return (getLeftSensorPosition() + getRightSensorPosition()) / 2.0;
     }
 
     public void zeroHeading() {
@@ -152,5 +154,41 @@ public class DriveSubsystem extends SubsystemBase {
     private void resetEncoders() {
         _leftDrive.setSelectedSensorPosition(0);
         _rightDrive.setSelectedSensorPosition(0);
+    }
+
+    private double getLeftSensorPosition() {
+        return rawTalonPositionToMeters(_leftDrive.getSelectedSensorPosition());
+    }
+
+    private double getRightSensorPosition() {
+        return rawTalonPositionToMeters(_rightDrive.getSelectedSensorPosition());
+    }
+
+    private double getLeftSensorVelocity() {
+        return rawTalonVelocityToMetersPerSecond(_leftDrive.getSelectedSensorVelocity());
+    }
+
+    private double getRightSensorVelocity() {
+        return rawTalonVelocityToMetersPerSecond(_rightDrive.getSelectedSensorVelocity());
+    }
+
+    private double rawTalonPositionToMeters(double counts) {
+        double metersPerTick = DriveConstants.WHEEL_CIRCUMFERENCE_METERS / Constants.FALCON_ENCODER_COUNTS_PER_REVOLUTION;
+        return (metersPerTick * counts) / getCurrentGearing();
+    }
+
+    private double rawTalonVelocityToMetersPerSecond(double countsPer100ms) {
+        double countsPerSecond = countsPer100ms * 10;
+        double metersPerTick = DriveConstants.WHEEL_CIRCUMFERENCE_METERS / Constants.FALCON_ENCODER_COUNTS_PER_REVOLUTION;
+        return (countsPerSecond * metersPerTick) / getCurrentGearing();
+    }
+
+    private double getCurrentGearing() {
+        if (_shiftSolenoid.get() == DriveConstants.SHIFT_LOW) {
+            return DriveConstants.LOW_GEARING;
+        }
+        else {
+            return DriveConstants.HIGH_GEARING;
+        }
     }
 }
