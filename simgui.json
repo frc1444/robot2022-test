@@ -7,6 +7,8 @@
       "/LiveWindow/ShooterSubsystem": "Subsystem",
       "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[1]": "Digital Input",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler"
     },
     "windows": {
@@ -15,6 +17,14 @@
           "visible": true
         }
       }
+    }
+  },
+  "NetworkTables": {
+    "LiveWindow": {
+      "open": true
+    },
+    "SmartDashboard": {
+      "open": true
     }
   }
 }

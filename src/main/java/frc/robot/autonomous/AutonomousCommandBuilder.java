@@ -23,6 +23,10 @@ public final class AutonomousCommandBuilder {
             case "oh_god_wtf":
                 cmd = new TwoBallExample(drive, intake, shooter, trajectory);
             break;
+            
+            case "do nothing":
+                cmd = new DoNothing(drive, intake, shooter);
+            break;
 
             default:
                 cmd = new DoNothing(drive, intake, shooter);

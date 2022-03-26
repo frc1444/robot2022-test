@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 
 public final class AutonomousPathBuilder {
@@ -28,10 +29,10 @@ public final class AutonomousPathBuilder {
             try {
                 var trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
                 trajectories.put(
-                    getBareFileName(file.toString()),
+                    getBareFileName(file.getName()),
                     trajectory);
             } catch (IOException ex) {
-
+                DriverStation.reportError("Unable to open file: " + file, ex.getStackTrace());
             }
         }
 
@@ -39,12 +40,13 @@ public final class AutonomousPathBuilder {
     }
 
     private static String getBareFileName(String file) {
-        int pos = file.indexOf(".");
-        if (pos == -1) {
+        int end = file.indexOf(".");
+        
+        if (end == -1) {
             return file;
         }
         else {
-            return file.substring(0, pos);
+            return file.substring(0, end);
         }
     }
 }

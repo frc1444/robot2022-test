@@ -9,10 +9,12 @@ import java.util.HashMap;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.DriveSubsystem;
@@ -89,7 +91,11 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
+    // Pair up saved trajectories with appropriate auto commands
     buildAutoCommands(trajectories);
+
+    // Put the auto commands to a drop down in the SmartDashboard
+    SmartDashboard.putData("Auto Mode",_autoChooser);
 
   }
 
@@ -141,12 +147,19 @@ public class RobotContainer {
     var keySet = trajectories.keySet();
 
     for (var key : keySet) {
+
       _autoCommands.put(key,
         AutonomousCommandBuilder.buildAutoCommand(
           key, 
           trajectories.get(key), 
           _drive, _shooter, _intake)
       );
+
+      if (key.equals("do nothing")) {
+        _autoChooser.setDefaultOption(key, _autoCommands.get(key));
+      } else {
+        _autoChooser.addOption(key, _autoCommands.get(key));
+      }
     }
   }
 
@@ -156,7 +169,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return _autoCommands.get("oh_god_wtf");
+    return _autoChooser.getSelected();
   }
 
   public double getShooterSetpoint() {
