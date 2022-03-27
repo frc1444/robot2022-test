@@ -118,6 +118,13 @@ public class RobotInput {
 
     }
 
+    public Trigger getVisionOn() {
+        return new JoystickButton(_operatorController, PS4Controller.Button.kOptions.value);
+    }
+    public Trigger getVisionOff() {
+        return new JoystickButton(_operatorController, PS4Controller.Button.kShare.value);
+    }
+
     private boolean driverPovEquals0() {
         return _driveController.getPOV() == 0;
     }

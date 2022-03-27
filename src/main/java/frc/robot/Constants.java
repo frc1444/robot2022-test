@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
@@ -23,6 +24,8 @@ public final class Constants {
 
     /** Amount of time to debounce input triggers in seconds */
     public static final double INPUT_DEBOUNCE = 0.05;
+
+    public static final Translation2d GOAL_CENTER = new Translation2d(0.0, 0.0);
 
     public final class InputConstants {
 
@@ -78,6 +81,7 @@ public final class Constants {
     public static final class DigitalIO {
         public static final int LOWER_BALL_SENSOR = 0;
         public static final int UPPER_BALL_SENSOR = 1;
+        public static final int VISION_LED = 2;
     }
 
     public static final class DriveConstants {
