@@ -95,8 +95,8 @@ public final class Constants {
         public static final double TURN_TOLERANCE_DEG = 5;
         public static final double TURN_RATE_TOLERANCE = 10;    // degrees per second
 
-        public static final double LOW_GEAR_RAMP_RATE = 0.2;
-        public static final double HIGH_GEAR_RAMP_RATE = 0.3;
+        public static final double LOW_GEAR_RAMP_RATE = 0.4;
+        public static final double HIGH_GEAR_RAMP_RATE = 0.6;
         public static final double DEAD_ZONE = 0.04;
 
         public static final double WHEEL_DIAMETER_METERS = 0.1524;
@@ -146,7 +146,7 @@ public final class Constants {
         public static final double SHOOT_CLOSE_SPEED = -0.40;
 
         /** Shooter speed for far shots */
-        public static final double SHOOT_FAR_SPEED = -0.35;
+        public static final double SHOOT_FAR_SPEED = -0.40;
 
         public static final double HOOD_KP = 0.06;
         public static final double HOOD_KF = 0.02;
@@ -163,5 +163,6 @@ public final class Constants {
         public static final DoubleSolenoid.Value INTAKE_UP = DoubleSolenoid.Value.kReverse;
         public static final DoubleSolenoid.Value INTAKE_DOWN = DoubleSolenoid.Value.kForward;
         public static final double INTAKE_RAMP_RATE = 0.3;
+        public static final double INDEX_RAMP_RATE = 0.05;
     }
 }

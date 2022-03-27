@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -29,6 +30,7 @@ public class ShootFar extends CommandBase {
     @Override
     public void execute() {
         if (_shooter.isAtSetpoint()) {
+            Timer.delay(0.1);
             _intake.feed();
         }
     }

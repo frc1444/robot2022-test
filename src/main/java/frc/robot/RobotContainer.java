@@ -20,6 +20,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.autonomous.AutonomousCommandBuilder;
+import frc.robot.autonomous.DriveDistance;
 import frc.robot.commands.DoNothing;
 import frc.robot.commands.QuickLeft;
 import frc.robot.commands.QuickRight;
@@ -155,6 +156,9 @@ public class RobotContainer {
     var keySet = trajectories.keySet();
 
     _autoChooser.setDefaultOption("do nothing", new DoNothing(_drive, _intake, _shooter));
+    _autoChooser.addOption("drive 1 meter", new DriveDistance(_drive, 1.0));
+    _autoChooser.addOption("drive 2 meters", new DriveDistance(_drive, 2.0));
+    _autoChooser.addOption("drive 3 meters", new DriveDistance(_drive, 3.0));
 
     for (var key : keySet) {
       _autoCommands.put(key,
