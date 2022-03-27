@@ -122,6 +122,9 @@ public class RobotContainer {
     final var quickLeftTrigger = _robotInput.getQuickLeft();
     final var quickRightTrigger = _robotInput.getQuickRight();
 
+    final var visionOn = _robotInput.getVisionOn();
+    final var visionOff = _robotInput.getVisionOff();
+
     intakeTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intake.intake());
     ejectTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intake.eject(true));
     ejectLowerTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intake.eject(false));
@@ -145,6 +148,8 @@ public class RobotContainer {
       .whileActiveContinuous(new QuickLeft(_drive).withTimeout(5));
     quickRightTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth)
       .whileActiveContinuous(new QuickRight(_drive).withTimeout(5));
+    visionOn.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _drive.getVisionState().setEnabled(true));
+    visionOff.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _drive.getVisionState().setEnabled(false));
   }
 
   private void buildAutoCommands(HashMap<String, Trajectory> trajectories) {

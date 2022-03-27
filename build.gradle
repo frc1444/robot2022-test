@@ -66,6 +66,12 @@ dependencies {
     simulationRelease wpi.sim.enableRelease()
 
     testImplementation 'junit:junit:4.13.1'
+
+    // https://mvnrepository.com/artifact/org.zeromq/jeromq
+    implementation group: 'org.zeromq', name: 'jeromq', version: '0.5.2'
+
+    // https://mvnrepository.com/artifact/org.jetbrains/annotations
+    implementation group: 'org.jetbrains', name: 'annotations', version: '23.0.0'
 }
 
 // Simulation configuration (e.g. environment variables).

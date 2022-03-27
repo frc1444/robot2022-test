@@ -7,16 +7,25 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.Pigeon2;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.util.FalconVelocityConverter;
+import frc.robot.vision.Surrounding;
+import frc.robot.vision.VisionInstant;
+import frc.robot.vision.VisionOdometryUpdater;
+import frc.robot.vision.VisionPacketListener;
+import frc.robot.vision.VisionPacketParser;
+import frc.robot.vision.VisionState;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -26,6 +35,9 @@ public class DriveSubsystem extends SubsystemBase {
     private final Pigeon2 _gyro;
 
     private final DifferentialDriveOdometry _odomemtry;
+    private final VisionPacketListener _visionProvider;
+    private final VisionState _visionState;
+    private final VisionOdometryUpdater _visionOdometryUpdater;
 
     public DriveSubsystem(DoubleSolenoid shiftSolenoid) {
         _leftDrive = new TalonFX(Constants.CanIds.LEFT_DRIVE_LEADER);
@@ -62,6 +74,9 @@ public class DriveSubsystem extends SubsystemBase {
 
         resetEncoders();
         _odomemtry = new DifferentialDriveOdometry(new Rotation2d(getHeadingRadians()));
+        _visionProvider = new VisionPacketListener(new VisionPacketParser(new ObjectMapper()), "tcp://10.14.44.5:5801");
+        _visionState = new VisionState();
+        _visionOdometryUpdater = new VisionOdometryUpdater(this, _odomemtry);
     }
 
     @Override
@@ -71,6 +86,18 @@ public class DriveSubsystem extends SubsystemBase {
             getLeftSensorPosition(), 
             getRightSensorPosition()
         );
+        _visionState.update();
+        VisionInstant visionInstant = _visionProvider.getVisionInstant();
+        if (visionInstant != null && visionInstant.getSurroundings().size() == 1) {
+            Surrounding surrounding = visionInstant.getSurroundings().get(0);
+            SmartDashboard.putString("Surrounding", surrounding.toString());
+            // We don't want to use vision in autonomous at the moment.
+            //   If we do decide to use vision during autonomous, we should create another DifferentialDriveOdometry instance only for vision
+            _visionOdometryUpdater.update(surrounding, !DriverStation.isAutonomous());
+        } else {
+            SmartDashboard.putString("Surrounding", "None");
+            _visionOdometryUpdater.updateNoVision();
+        }
     }
 
     /**
@@ -143,6 +170,10 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void zeroHeading() {
         _gyro.setYaw(0.0);
+    }
+
+    public VisionState getVisionState() {
+        return _visionState;
     }
 
     public double getTurnRate() {
