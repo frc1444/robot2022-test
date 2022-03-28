@@ -51,10 +51,8 @@ public final class Constants {
         public static int INDEX_LOWER = 6;
         public static int INDEX_UPPER = 7;
         public static int SHOOTER = 8;
-        public static int FIRST_STAGE_LEFT_CLIMB = 9;
-        public static int FIRST_STAGE_RIGHT_CLIMB = 10;
-        public static int SECOND_STAGE_LEFT_CLIMB = 11;
-        public static int SECOND_STAGE_RIGHT_CLIMB = 12;
+        public static int FIRST_STAGE_CLIMB = 9;
+        public static int SECOND_STAGE_CLIMB = 10;
         public static int LEFT_DRIVE_LEADER = 13;
         public static int LEFT_DRIVE_FOLLOWER = 14;
         public static int RIGHT_DRIVE_LEADER = 15;
