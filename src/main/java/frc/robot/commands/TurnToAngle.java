@@ -8,28 +8,32 @@ import frc.robot.subsystems.DriveSubsystem;
 public class TurnToAngle extends PIDCommand {
     public TurnToAngle(double angle, DriveSubsystem drive) {
         super(
-            new PIDController(
-                Constants.DriveConstants.TURN_KP, 
-                Constants.DriveConstants.TURN_KI, 
-                Constants.DriveConstants.TURN_KD
-            ),
+            createPIDController(),
             drive::getHeading,
             angle,
             output -> drive.curvatureDrive(0.0, output),
             drive
         );
-
+    }
+    /** Creates a {@link PIDController} desired to be used with degrees */
+    public static PIDController createPIDController() {
+        PIDController pidController = new PIDController(
+            Constants.DriveConstants.TURN_KP,
+            Constants.DriveConstants.TURN_KI,
+            Constants.DriveConstants.TURN_KD,
+            Constants.PERIOD
+        );
         // Set the controller to be continuous (because it is an angle controller)
-        getController().enableContinuousInput(-180, 180);
-    
+        pidController.enableContinuousInput(-180, 180);
+
         // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
         // setpoint before it is considered as having reached the reference
-        getController().setTolerance(
-            Constants.DriveConstants.TURN_TOLERANCE_DEG, 
+        pidController.setTolerance(
+            Constants.DriveConstants.TURN_TOLERANCE_DEG,
             Constants.DriveConstants.TURN_RATE_TOLERANCE
         );
-
-    }    
+        return pidController;
+    }
 
     @Override
     public boolean isFinished() {

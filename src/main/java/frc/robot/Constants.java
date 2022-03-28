@@ -25,7 +25,7 @@ public final class Constants {
     /** Amount of time to debounce input triggers in seconds */
     public static final double INPUT_DEBOUNCE = 0.05;
 
-    public static final Translation2d GOAL_CENTER = new Translation2d(0.0, 0.0);
+    public static final double PERIOD = 0.02;
 
     public final class InputConstants {
 
@@ -168,5 +168,10 @@ public final class Constants {
         public static final DoubleSolenoid.Value INTAKE_DOWN = DoubleSolenoid.Value.kForward;
         public static final double INTAKE_RAMP_RATE = 0.3;
         public static final double INDEX_RAMP_RATE = 0.05;
+    }
+    public static final class FieldConstants {
+        public static final Translation2d GOAL_CENTER = new Translation2d(0.0, 0.0);
+        public static final double UPPER_HUB_DIAMETER_METERS = 53.0 + 1.0 / 8.0;
+        public static final double UPPER_HUB_RADIUS_METERS = UPPER_HUB_DIAMETER_METERS / 2.0;
     }
 }

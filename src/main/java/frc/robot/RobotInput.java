@@ -125,6 +125,10 @@ public class RobotInput {
         return new JoystickButton(_operatorController, PS4Controller.Button.kShare.value);
     }
 
+    public boolean isTurnTowardsGoalDown() {
+        return _driveController.getCrossButton();
+    }
+
     private boolean driverPovEquals0() {
         return _driveController.getPOV() == 0;
     }

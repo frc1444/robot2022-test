@@ -1,74 +1,94 @@
 package frc.robot.vision;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
-
-import static java.lang.Math.abs;
+import org.jetbrains.annotations.Nullable;
 
 public class VisionOdometryUpdater {
     private static final double VISION_DELAY_TIME_ALLOWED = .3;
 
     private final DriveSubsystem _driveSubsystem;
-    private final DifferentialDriveOdometry _odometry;
 
     private double lastTimestamp = 0;
     private int similarCount = 0;
-    private Transform2d lastSurroundingTransform = null;
+    private Translation2d lastRelativeGoalCenter = null;
 
-    public VisionOdometryUpdater(DriveSubsystem driveSubsystem, DifferentialDriveOdometry odometry) {
+    public VisionOdometryUpdater(DriveSubsystem driveSubsystem) {
         _driveSubsystem = driveSubsystem;
-        _odometry = odometry;
     }
 
-    public void updateNoVision() {
+    private static Translation2d getRelativeGoalCenter(VisionInstant visionInstant) {
+        if (visionInstant.getSurroundings().isEmpty()) {
+            throw new IllegalArgumentException("You can only call getRelativeGoalCenter with a VisionInstant that has surroundings!");
+        }
+        int count = 0;
+        double xSum = 0.0;
+        double ySum = 0.0;
+        for (Surrounding surrounding : visionInstant.getSurroundings()) {
+            Transform2d transform2d = surrounding.getTransform();
+            Translation2d goalCenter = transform2d.getTranslation().plus(new Translation2d(Constants.FieldConstants.UPPER_HUB_RADIUS_METERS, 0.0).rotateBy(transform2d.getRotation()));
+            // If we decide in the future to not include a particular surrounding, we would throw these 3 lines in an if statement
+            xSum += goalCenter.getX();
+            ySum += goalCenter.getY();
+            count++;
+        }
+
+        return new Translation2d(xSum / count, ySum / count);
+    }
+
+    private void resetSimilar() {
         similarCount = 0;
-        lastSurroundingTransform = null;
+        lastRelativeGoalCenter = null;
     }
 
-    public void update(Surrounding surrounding, boolean updateOdometry) {
-        double timestamp = surrounding.getTimestamp();
+    public @Nullable Translation2d updateAndGetNewPosition(@Nullable VisionInstant visionInstant) {
+        if (visionInstant == null) {
+            resetSimilar();
+            setVisionStatus("No vision connection");
+            return null;
+        }
+        double timestamp = visionInstant.getTimestamp();
         final double lastTimestamp = this.lastTimestamp;
         this.lastTimestamp = timestamp;
 
         if (timestamp + VISION_DELAY_TIME_ALLOWED < timestamp) {
+            resetSimilar();
             setVisionStatus("Too Old");
-            return; // this is too old!
+            return null;
         }
         if (timestamp <= lastTimestamp) {
-            return; // this isn't new!
+            return null;
         }
-        Transform2d transform = surrounding.getTransform();
-        Transform2d lastSurroundingTransform = this.lastSurroundingTransform;
-        this.lastSurroundingTransform = transform;
-        if(lastSurroundingTransform == null){
-            return;
+        if (visionInstant.getSurroundings().isEmpty()) {
+            resetSimilar();
+            setVisionStatus("Connected, no surroundings");
+            return null;
         }
-        if(lastSurroundingTransform.getTranslation().getDistance(transform.getTranslation()) < .2 && abs(lastSurroundingTransform.getRotation().minus(transform.getRotation()).getDegrees()) < 7.0){
+        Translation2d relativeGoalCenter = getRelativeGoalCenter(visionInstant);
+        Translation2d lastRelativeGoalCenter = this.lastRelativeGoalCenter;
+        this.lastRelativeGoalCenter = relativeGoalCenter;
+        if(lastRelativeGoalCenter == null){
+            return null;
+        }
+        if(lastRelativeGoalCenter.getDistance(relativeGoalCenter) < .2){
             similarCount++;
         } else {
             similarCount = 0;
         }
         if(similarCount < 3){
             setVisionStatus("Jumpy Vision Data");
-            return;
+            return null;
         }
-        if (!updateOdometry) {
-            setVisionStatus("Vision data, but not updating");
-            return;
-        }
-        Translation2d visionRelativePosition = transform.getTranslation();
         // note that this year we will not use transform.getRotation() because that should always be 0 degrees this year
         Rotation2d robotHeading = new Rotation2d(_driveSubsystem.getHeadingRadians());
-        Translation2d newPosition = Constants.GOAL_CENTER.plus(visionRelativePosition.unaryMinus().rotateBy(robotHeading));
-        // TODO I don't really know if we want the resetPosition method to update the gyro offset. This shouldn't be done during autonomous, so it probably don't matter
-        _odometry.resetPosition(new Pose2d(newPosition, robotHeading), robotHeading);
-        setVisionStatus("Good vision");
+        Translation2d newPosition = Constants.FieldConstants.GOAL_CENTER.plus(relativeGoalCenter.unaryMinus().rotateBy(robotHeading));
+//        _odometry.resetPosition(new Pose2d(newPosition, robotHeading), robotHeading);
+        setVisionStatus("Good vision. Similar: " + similarCount);
+        return newPosition;
     }
     private void setVisionStatus(String statusMessage){
         // do nothing now, could use this later and put something in Shuffleboard

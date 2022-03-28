@@ -22,6 +22,7 @@ public class Robot extends TimedRobot {
     private final RobotContainer _robotContainer;
 
     public Robot() {
+        super(Constants.PERIOD);
 
         var trajectories = AutonomousPathBuilder.assemblePaths();
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our

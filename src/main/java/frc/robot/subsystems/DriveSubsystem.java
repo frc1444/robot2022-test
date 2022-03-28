@@ -10,17 +10,16 @@ import com.ctre.phoenix.sensors.Pigeon2;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.util.FalconVelocityConverter;
-import frc.robot.vision.Surrounding;
 import frc.robot.vision.VisionInstant;
 import frc.robot.vision.VisionOdometryUpdater;
 import frc.robot.vision.VisionPacketListener;
@@ -34,7 +33,10 @@ public class DriveSubsystem extends SubsystemBase {
     private final DoubleSolenoid _shiftSolenoid;
     private final Pigeon2 _gyro;
 
-    private final DifferentialDriveOdometry _odomemtry;
+    /** This odometry instance is only updated by the gyro and wheel encoders */
+    private final DifferentialDriveOdometry _odometry;
+    /** This odometry instance is updated by the gyro and wheel encoders, and gets reset whenever there is good vision data*/
+    private final DifferentialDriveOdometry _odometryWithVision;
     private final VisionPacketListener _visionProvider;
     private final VisionState _visionState;
     private final VisionOdometryUpdater _visionOdometryUpdater;
@@ -73,30 +75,39 @@ public class DriveSubsystem extends SubsystemBase {
         _gyro.configFactoryDefault();
 
         resetEncoders();
-        _odomemtry = new DifferentialDriveOdometry(new Rotation2d(getHeadingRadians()));
+        Rotation2d rawHeading = new Rotation2d(getHeadingRadians());
+        _odometry = new DifferentialDriveOdometry(rawHeading);
+        _odometryWithVision = new DifferentialDriveOdometry(rawHeading);
         _visionProvider = new VisionPacketListener(new VisionPacketParser(new ObjectMapper()), "tcp://10.14.44.5:5801");
         _visionState = new VisionState();
-        _visionOdometryUpdater = new VisionOdometryUpdater(this, _odomemtry);
+        _visionOdometryUpdater = new VisionOdometryUpdater(this);
     }
 
     @Override
     public void periodic() {
-        _odomemtry.update(
-            new Rotation2d(getHeadingRadians()), 
+        // remember that this is the raw heading
+        Rotation2d rawHeading = new Rotation2d(getHeadingRadians());
+        _odometry.update(
+            rawHeading,
             getLeftSensorPosition(), 
             getRightSensorPosition()
         );
-        _visionState.update();
+        _odometryWithVision.update(
+            rawHeading,
+            getLeftSensorPosition(),
+            getRightSensorPosition()
+        );
+        _visionState.update(); // make sure the vision LED is on or off
+
         VisionInstant visionInstant = _visionProvider.getVisionInstant();
-        if (visionInstant != null && visionInstant.getSurroundings().size() == 1) {
-            Surrounding surrounding = visionInstant.getSurroundings().get(0);
-            SmartDashboard.putString("Surrounding", surrounding.toString());
-            // We don't want to use vision in autonomous at the moment.
-            //   If we do decide to use vision during autonomous, we should create another DifferentialDriveOdometry instance only for vision
-            _visionOdometryUpdater.update(surrounding, !DriverStation.isAutonomous());
-        } else {
-            SmartDashboard.putString("Surrounding", "None");
-            _visionOdometryUpdater.updateNoVision();
+        Translation2d newPosition = _visionOdometryUpdater.updateAndGetNewPosition(visionInstant);
+        if (newPosition != null) {
+            _odometryWithVision.resetPosition(new Pose2d(newPosition, _odometryWithVision.getPoseMeters().getRotation()), rawHeading);
+        }
+
+        if (DriverStation.isDisabled()) {
+            // When the robot is disabled, both odometry are synchronized
+            _odometry.resetPosition(_odometryWithVision.getPoseMeters(), rawHeading);
         }
     }
 
@@ -138,7 +149,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public Pose2d getPose() {
-        return _odomemtry.getPoseMeters();
+        return _odometry.getPoseMeters();
+    }
+    public Pose2d getPoseWithVision() {
+        return _odometryWithVision.getPoseMeters();
     }
 
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
@@ -149,7 +163,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void resetOdometry(Pose2d pose) {
         resetEncoders();
-        _odomemtry.resetPosition(pose, new Rotation2d(getHeadingRadians()));
+        Rotation2d rawHeading = new Rotation2d(getHeadingRadians());
+        _odometry.resetPosition(pose, rawHeading);
+        _odometryWithVision.resetPosition(pose, rawHeading);
     }
 
     public double getSetpoint() {
