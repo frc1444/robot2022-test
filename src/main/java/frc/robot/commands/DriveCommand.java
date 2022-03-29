@@ -22,7 +22,7 @@ public class DriveCommand extends CommandBase {
         turnController = TurnToAngle.createPIDController();
     }
 
-    private static Rotation2d getHeadingTowardsGoal(Pose2d robotPose) {
+    public static Rotation2d getHeadingTowardsGoal(Pose2d robotPose) {
         Translation2d translation = Constants.FieldConstants.GOAL_CENTER.minus(robotPose.getTranslation());
         return new Rotation2d(Math.atan2(translation.getY(), translation.getX()));
     }

@@ -16,9 +16,11 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.commands.DriveCommand;
 import frc.robot.util.FalconVelocityConverter;
 import frc.robot.vision.VisionInstant;
 import frc.robot.vision.VisionOdometryUpdater;
@@ -104,7 +106,11 @@ public class DriveSubsystem extends SubsystemBase {
         VisionInstant visionInstant = _visionProvider.getVisionInstant();
         Translation2d newPosition = _visionOdometryUpdater.updateAndGetNewPosition(visionInstant);
         if (newPosition != null) {
-            _odometryWithVision.resetPosition(new Pose2d(newPosition, _odometryWithVision.getPoseMeters().getRotation()), rawHeading);
+            Pose2d pose = new Pose2d(newPosition, _odometryWithVision.getPoseMeters().getRotation());
+            _odometryWithVision.resetPosition(pose, rawHeading);
+            Rotation2d headingTowardsGoal = DriveCommand.getHeadingTowardsGoal(pose);
+            Rotation2d robotHeading = pose.getRotation();
+            SmartDashboard.putNumber("Degrees to turn", headingTowardsGoal.minus(robotHeading).getDegrees());
         }
 
         if (DriverStation.isDisabled()) {
