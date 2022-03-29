@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.DriveCommand;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -45,6 +46,7 @@ public class RobotContainer {
   private final DriveSubsystem _drive;
   private final IntakeSubsystem _intake;
   private final ShooterSubsystem _shooter;
+  private final ClimbSubsystem _climb;
 
   private final RobotInput _robotInput = new RobotInput(
     new PS4Controller(Constants.Controller.PORT_PS4_DRIVER),
@@ -81,12 +83,19 @@ public class RobotContainer {
         Constants.PneumaticPortIds.SHOOTER_HOOD_REV
       )
     );
+    _climb = new ClimbSubsystem(
+        _pneumaticsHub.makeDoubleSolenoid(Constants.PneumaticPortIds.CLIMB_FWD, Constants.PneumaticPortIds.CLIMB_REV)
+    );
     
     _drive.setDefaultCommand(new DriveCommand(_drive, _robotInput));
 
     _intake.setDefaultCommand(
       new RunCommand(() -> _intake.update()
       , _intake));
+
+    _climb.setDefaultCommand(new RunCommand(() -> {
+        _climb.update(_robotInput.getClimbStage1(), _robotInput.getClimbStage2());
+    }, _climb));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -125,6 +134,8 @@ public class RobotContainer {
     final var visionOn = _robotInput.getVisionOn();
     final var visionOff = _robotInput.getVisionOff();
 
+    final var releaseClimbHook = _robotInput.getReleaseClimbHook();
+
     intakeTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intake.intake());
     ejectTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intake.eject(true));
     ejectLowerTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intake.eject(false));
@@ -150,6 +161,7 @@ public class RobotContainer {
       .whileActiveContinuous(new QuickRight(_drive).withTimeout(5));
     visionOn.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _drive.getVisionState().setEnabled(true));
     visionOff.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _drive.getVisionState().setEnabled(false));
+    releaseClimbHook.whenActive(() -> _climb.releaseHook()).whenInactive(() -> _climb.engageHook());
   }
 
   private void buildAutoCommands(HashMap<String, Trajectory> trajectories) {

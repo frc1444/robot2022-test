@@ -51,8 +51,8 @@ public final class Constants {
         public static int INDEX_LOWER = 6;
         public static int INDEX_UPPER = 7;
         public static int SHOOTER = 8;
-        public static int FIRST_STAGE_CLIMB = 9;
-        public static int SECOND_STAGE_CLIMB = 10;
+        public static int FIRST_STAGE_CLIMB = 10;
+        public static int SECOND_STAGE_CLIMB = 9;
         public static int LEFT_DRIVE_LEADER = 13;
         public static int LEFT_DRIVE_FOLLOWER = 14;
         public static int RIGHT_DRIVE_LEADER = 15;
@@ -166,6 +166,12 @@ public final class Constants {
         public static final DoubleSolenoid.Value INTAKE_DOWN = DoubleSolenoid.Value.kForward;
         public static final double INTAKE_RAMP_RATE = 0.3;
         public static final double INDEX_RAMP_RATE = 0.05;
+    }
+    public static final class ClimbConstants {
+        public static final double MAX_SPEED_STAGE_FIRST = 1.0;
+        public static final double MAX_SPEED_STAGE_SECOND = 1.0;
+        public static final double MAX_SPEED_STAGE_FIRST_REVERSE = 0.2;
+        public static final double MAX_SPEED_STAGE_SECOND_REVERSE = 0.2;
     }
     public static final class FieldConstants {
         public static final Translation2d GOAL_CENTER = new Translation2d(0.0, 0.0);

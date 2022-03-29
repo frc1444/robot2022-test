@@ -108,6 +108,25 @@ public class RobotInput {
         return applyInputCurve(raw, Constants.InputConstants.ROTATE_INPUT_CURVE);
     }
 
+    public double getClimbStage1() {
+        if (!_operatorController.isConnected()) {
+            return 0.0;
+        }
+        if (!_operatorController.getL3Button()) { // must press left stick to enable climb controls
+            return 0.0;
+        }
+        return -_operatorController.getLeftY();
+    }
+    public double getClimbStage2() {
+        if (!_operatorController.isConnected()) {
+            return 0.0;
+        }
+        if (!_operatorController.getR3Button()) { // must press right stick to enable climb controls
+            return 0.0;
+        }
+        return -_operatorController.getRightY();
+    }
+
     public Trigger getShooterSpinUp() {
         return new Trigger(this::rightTriggerActive);
 
@@ -123,6 +142,10 @@ public class RobotInput {
     }
     public Trigger getVisionOff() {
         return new JoystickButton(_operatorController, PS4Controller.Button.kShare.value);
+    }
+
+    public Trigger getReleaseClimbHook() {
+        return new JoystickButton(_operatorController, PS4Controller.Button.kPS.value);
     }
 
     public boolean isTurnTowardsGoalDown() {
