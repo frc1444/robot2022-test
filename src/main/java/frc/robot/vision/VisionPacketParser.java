@@ -30,18 +30,15 @@ public class VisionPacketParser {
     private List<Surrounding> parseSurroundings(double timestamp, List<VisionInstant> instants) throws IOException {
         final List<Surrounding> surroundings = new ArrayList<>();
         for(VisionInstant instant : instants){
-            if (instant.cameraId != 0) {
-                // In robot2020, we caught an invalid camera ID exception when using an offsetProvider, then rethrow as an IOException
-                throw new IOException("Invalid camera ID!");
-            }
-            // if in the future we add multiple cameras, we would have different offsets for each camera here. robot2019 had this but we don't need it anymore
-            final Rotation2d offset = Rotation2d.fromDegrees(0); // TODO look at robot2021 and see what the default offset is
-
             for (VisionPacket packet : instant.packets) {
-                Transform2d transform = new Transform2d(
-                        new Translation2d(packet.zMeters, -packet.xMeters).rotateBy(offset),
-                        Rotation2d.fromDegrees(packet.yawDegrees).plus(offset)
+                Transform2d transform = new Transform2d( // target/world centric
+                    new Translation2d(packet.zMeters, packet.xMeters).rotateBy(Rotation2d.fromDegrees(-packet.yawDegrees)),
+                    Rotation2d.fromDegrees(-packet.yawDegrees)
                 );
+//                Transform2d transform = new Transform2d( // robot centric
+//                        new Translation2d(packet.zMeters * Math.cos(Math.toRadians(packet.pitchDegrees)), -packet.xMeters),
+//                        Rotation2d.fromDegrees(packet.yawDegrees)
+//                );
                 Surrounding surrounding = new Surrounding(transform, timestamp);
                 surroundings.add(surrounding);
             }

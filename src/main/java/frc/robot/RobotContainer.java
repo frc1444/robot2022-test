@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -159,8 +161,42 @@ public class RobotContainer {
       .whileActiveContinuous(new QuickLeft(_drive).withTimeout(5));
     quickRightTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth)
       .whileActiveContinuous(new QuickRight(_drive).withTimeout(5));
-    visionOn.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _drive.getVisionState().setEnabled(true));
-    visionOff.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _drive.getVisionState().setEnabled(false));
+    visionOn.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(new CommandBase() {
+        private boolean done = false;
+        @Override
+        public void initialize() {
+            _drive.getVisionState().setEnabled(true);
+            done = true;
+        }
+
+        @Override
+        public boolean isFinished() {
+            return done;
+        }
+
+        @Override
+        public boolean runsWhenDisabled() {
+            return true;
+        }
+    });
+    visionOff.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(new CommandBase() {
+        private boolean done = false;
+      @Override
+      public void initialize() {
+          _drive.getVisionState().setEnabled(false);
+          done = true;
+      }
+
+        @Override
+        public boolean isFinished() {
+            return done;
+        }
+
+        @Override
+      public boolean runsWhenDisabled() {
+          return true;
+      }
+    });
     releaseClimbHook.whenActive(() -> _climb.releaseHook()).whenInactive(() -> _climb.engageHook());
   }
 

@@ -81,6 +81,8 @@ public class DriveSubsystem extends SubsystemBase {
         _visionProvider = new VisionPacketListener(new VisionPacketParser(new ObjectMapper()), "tcp://10.14.44.5:5801");
         _visionState = new VisionState();
         _visionOdometryUpdater = new VisionOdometryUpdater(this);
+
+        _visionProvider.start();
     }
 
     @Override

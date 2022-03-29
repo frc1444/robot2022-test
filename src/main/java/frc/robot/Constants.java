@@ -4,8 +4,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public final class Constants {
@@ -175,7 +177,7 @@ public final class Constants {
     }
     public static final class FieldConstants {
         public static final Translation2d GOAL_CENTER = new Translation2d(0.0, 0.0);
-        public static final double UPPER_HUB_DIAMETER_METERS = 53.0 + 1.0 / 8.0;
+        public static final double UPPER_HUB_DIAMETER_METERS = Units.inchesToMeters(53.0 + 1.0 / 8.0);
         public static final double UPPER_HUB_RADIUS_METERS = UPPER_HUB_DIAMETER_METERS / 2.0;
     }
 }

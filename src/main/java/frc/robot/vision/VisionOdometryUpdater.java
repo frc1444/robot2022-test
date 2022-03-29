@@ -3,6 +3,7 @@ package frc.robot.vision;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
@@ -21,20 +22,28 @@ public class VisionOdometryUpdater {
         _driveSubsystem = driveSubsystem;
     }
 
-    private static Translation2d getRelativeGoalCenter(VisionInstant visionInstant) {
-        if (visionInstant.getSurroundings().isEmpty()) {
-            throw new IllegalArgumentException("You can only call getRelativeGoalCenter with a VisionInstant that has surroundings!");
-        }
+    private static @Nullable Translation2d getRelativeGoalCenter(VisionInstant visionInstant) {
         int count = 0;
         double xSum = 0.0;
         double ySum = 0.0;
         for (Surrounding surrounding : visionInstant.getSurroundings()) {
             Transform2d transform2d = surrounding.getTransform();
             Translation2d goalCenter = transform2d.getTranslation().plus(new Translation2d(Constants.FieldConstants.UPPER_HUB_RADIUS_METERS, 0.0).rotateBy(transform2d.getRotation()));
+
+//            Rotation2d surroundingTheta = new Rotation2d(Math.atan2(transform2d.getY(), transform2d.getX()));
+//            if (Math.abs(surroundingTheta.minus(transform2d.getRotation()).getDegrees()) > 15.0) {
+//                continue;
+//            }
+
+
             // If we decide in the future to not include a particular surrounding, we would throw these 3 lines in an if statement
             xSum += goalCenter.getX();
             ySum += goalCenter.getY();
             count++;
+        }
+        SmartDashboard.putString("Using", count + "/" + visionInstant.getSurroundings().size());
+        if (count == 0) {
+            return null;
         }
 
         return new Translation2d(xSum / count, ySum / count);
@@ -55,7 +64,7 @@ public class VisionOdometryUpdater {
         final double lastTimestamp = this.lastTimestamp;
         this.lastTimestamp = timestamp;
 
-        if (timestamp + VISION_DELAY_TIME_ALLOWED < timestamp) {
+        if (timestamp + VISION_DELAY_TIME_ALLOWED < Timer.getFPGATimestamp()) {
             resetSimilar();
             setVisionStatus("Too Old");
             return null;
@@ -69,6 +78,13 @@ public class VisionOdometryUpdater {
             return null;
         }
         Translation2d relativeGoalCenter = getRelativeGoalCenter(visionInstant);
+        if (relativeGoalCenter == null) {
+            resetSimilar();
+            setVisionStatus("Ignoring provided data");
+            return null;
+        }
+        SmartDashboard.putNumber("goalX", relativeGoalCenter.getX());
+        SmartDashboard.putNumber("goalY", relativeGoalCenter.getY());
         Translation2d lastRelativeGoalCenter = this.lastRelativeGoalCenter;
         this.lastRelativeGoalCenter = relativeGoalCenter;
         if(lastRelativeGoalCenter == null){
@@ -88,6 +104,8 @@ public class VisionOdometryUpdater {
         Translation2d newPosition = Constants.FieldConstants.GOAL_CENTER.plus(relativeGoalCenter.unaryMinus().rotateBy(robotHeading));
 //        _odometry.resetPosition(new Pose2d(newPosition, robotHeading), robotHeading);
         setVisionStatus("Good vision. Similar: " + similarCount);
+        SmartDashboard.putNumber("new position x", newPosition.getX());
+        SmartDashboard.putNumber("new position y", newPosition.getY());
         return newPosition;
     }
     private void setVisionStatus(String statusMessage){
