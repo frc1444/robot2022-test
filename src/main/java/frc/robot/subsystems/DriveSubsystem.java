@@ -27,6 +27,7 @@ import frc.robot.vision.VisionOdometryUpdater;
 import frc.robot.vision.VisionPacketListener;
 import frc.robot.vision.VisionPacketParser;
 import frc.robot.vision.VisionState;
+import org.jetbrains.annotations.Nullable;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -198,6 +199,12 @@ public class DriveSubsystem extends SubsystemBase {
 
     public VisionState getVisionState() {
         return _visionState;
+    }
+
+    /** @return The amount to turn to face the goal. This is based solely on theta value from vision. This value may not have been updated recently. */
+    public @Nullable Rotation2d getRotationTowardsGoal() {
+        Rotation2d headingTowardsGoal = _visionOdometryUpdater.getHeadingTowardsGoal();
+        return headingTowardsGoal == null ? null : headingTowardsGoal.minus(getPose().getRotation());
     }
 
     public double getTurnRate() {

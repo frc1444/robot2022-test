@@ -1,19 +1,24 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.TriggerAny;
 
 public class RobotInput {
 
     private final PS4Controller _driveController;
     private final PS4Controller _operatorController;
 
+    private final GenericHID _driveRumbleController;
+
     private boolean _singleControllerMode;
 
-    public RobotInput(PS4Controller driverController, PS4Controller operatorController) {
+    public RobotInput(PS4Controller driverController, PS4Controller operatorController, GenericHID driveRumbleController) {
         _driveController = driverController;
         _operatorController = operatorController;
+        _driveRumbleController = driveRumbleController;
 
         // This is pretty unreliable so disabling for now
         _singleControllerMode = false;
@@ -150,6 +155,13 @@ public class RobotInput {
 
     public boolean isTurnTowardsGoalDown() {
         return _driveController.getCrossButton();
+    }
+
+    public Trigger getDriverControllerIndicate() {
+        return TriggerAny.create(new JoystickButton(_driveController, PS4Controller.Button.kL3.value), new JoystickButton(_driveController, PS4Controller.Button.kR3.value));
+    }
+    public GenericHID getDriveRumble() {
+        return _driveRumbleController;
     }
 
     private boolean driverPovEquals0() {

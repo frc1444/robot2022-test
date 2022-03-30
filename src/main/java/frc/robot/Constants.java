@@ -76,6 +76,10 @@ public final class Constants {
     public static final class Controller {
         public static final int PORT_PS4_DRIVER = 0;
         public static final int PORT_PS4_OPERATOR = 4;
+        /** The driver's controller that the driver station thinks is an Xbox controller. Can be used for rumble */
+        public static final int PORT_DRIVER_RUMBLE = 1;
+        /** The operator's controller that the driver station thinks is an Xbox controller. Can be used for rumble */
+        public static final int PORT_OPERATOR_RUMBLE = 1;
     }
 
     public static final class DigitalIO {
@@ -88,7 +92,7 @@ public final class Constants {
         public static final double DRIVE_KP = 0.12;
         public static final double DRIVE_KF = 0.06;
     
-        public static final double TURN_KP = 0.001;
+        public static final double TURN_KP = 0.01;
         public static final double TURN_KI = 0.0;
         public static final double TURN_KD = 0.0;
 
@@ -172,7 +176,7 @@ public final class Constants {
     public static final class ClimbConstants {
         public static final double MAX_SPEED_STAGE_FIRST = 1.0;
         public static final double MAX_SPEED_STAGE_SECOND = 1.0;
-        public static final double MAX_SPEED_STAGE_FIRST_REVERSE = 0.2;
+        public static final double MAX_SPEED_STAGE_FIRST_REVERSE = 0.5;
         public static final double MAX_SPEED_STAGE_SECOND_REVERSE = 0.2;
     }
     public static final class FieldConstants {

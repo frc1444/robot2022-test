@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.DriveCommand;
@@ -31,6 +30,7 @@ import frc.robot.commands.QuickRight;
 import frc.robot.commands.ShootFar;
 import frc.robot.commands.ShootClose;
 import frc.robot.commands.Stop;
+import frc.robot.util.CommandUtil;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -52,7 +52,7 @@ public class RobotContainer {
 
   private final RobotInput _robotInput = new RobotInput(
     new PS4Controller(Constants.Controller.PORT_PS4_DRIVER),
-    new PS4Controller(Constants.Controller.PORT_PS4_OPERATOR));
+    new PS4Controller(Constants.Controller.PORT_PS4_OPERATOR), new GenericHID(Constants.Controller.PORT_DRIVER_RUMBLE));
 
   // A chooser for autonomous commands
   private final SendableChooser<Command> _autoChooser = new SendableChooser<>();
@@ -161,43 +161,12 @@ public class RobotContainer {
       .whileActiveContinuous(new QuickLeft(_drive).withTimeout(5));
     quickRightTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth)
       .whileActiveContinuous(new QuickRight(_drive).withTimeout(5));
-    visionOn.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(new CommandBase() {
-        private boolean done = false;
-        @Override
-        public void initialize() {
-            _drive.getVisionState().setEnabled(true);
-            done = true;
-        }
-
-        @Override
-        public boolean isFinished() {
-            return done;
-        }
-
-        @Override
-        public boolean runsWhenDisabled() {
-            return true;
-        }
-    });
-    visionOff.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(new CommandBase() {
-        private boolean done = false;
-      @Override
-      public void initialize() {
-          _drive.getVisionState().setEnabled(false);
-          done = true;
-      }
-
-        @Override
-        public boolean isFinished() {
-            return done;
-        }
-
-        @Override
-      public boolean runsWhenDisabled() {
-          return true;
-      }
-    });
+    visionOn.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(CommandUtil.runWhenDisabled(new InstantCommand(() -> _drive.getVisionState().setEnabled(true))));
+    visionOff.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(CommandUtil.runWhenDisabled(new InstantCommand(() -> _drive.getVisionState().setEnabled(false))));
     releaseClimbHook.whenActive(() -> _climb.releaseHook()).whenInactive(() -> _climb.engageHook());
+    _robotInput.getDriverControllerIndicate()
+        .whenActive(CommandUtil.runWhenDisabled(new InstantCommand(() -> _robotInput.getDriveRumble().setRumble(GenericHID.RumbleType.kRightRumble, 0.2))))
+        .whenInactive(CommandUtil.runWhenDisabled(new InstantCommand(() -> _robotInput.getDriveRumble().setRumble(GenericHID.RumbleType.kRightRumble, 0.0))));
   }
 
   private void buildAutoCommands(HashMap<String, Trajectory> trajectories) {

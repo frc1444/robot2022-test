@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -79,6 +80,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
         _currentLowerSensorState = lowerBallPresent();
         _currentUpperSensorState = upperBallPresent();
+
+        if (DriverStation.isDisabled()) {
+            stop(false);
+        }
     }
 
     public void update() {

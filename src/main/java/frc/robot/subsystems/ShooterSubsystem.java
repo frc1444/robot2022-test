@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
 import frc.robot.util.FalconVelocityConverter;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -38,6 +39,13 @@ public class ShooterSubsystem extends SubsystemBase {
         _hood.config_kF(Constants.SLOT_INDEX, Constants.ShooterConstants.HOOD_KF);
 
         _shooterSetpoint = 0.0;
+    }
+
+    @Override
+    public void periodic() {
+        if (DriverStation.isDisabled()) {
+            update(0.0);
+        }
     }
 
     public void update(double speed) {

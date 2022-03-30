@@ -56,8 +56,7 @@ public class VisionPacketListener implements VisionProvider, AutoCloseable {
                     if (reply != null) {
                         double timestamp = Timer.getFPGATimestamp();
                         try {
-                            List<Surrounding> surroundings = parser.parseSurroundings(timestamp, reply);
-                            instant = new VisionInstant(surroundings, timestamp);
+                            instant = parser.parse(timestamp, reply);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

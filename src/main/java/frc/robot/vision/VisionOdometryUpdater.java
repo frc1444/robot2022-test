@@ -9,6 +9,8 @@ import frc.robot.Constants;
 import frc.robot.subsystems.DriveSubsystem;
 import org.jetbrains.annotations.Nullable;
 
+import static java.util.Objects.requireNonNull;
+
 public class VisionOdometryUpdater {
     private static final double VISION_DELAY_TIME_ALLOWED = .3;
 
@@ -17,6 +19,9 @@ public class VisionOdometryUpdater {
     private double lastTimestamp = 0;
     private int similarCount = 0;
     private Translation2d lastRelativeGoalCenter = null;
+
+    /** The heading towards the goal. This value is based solely on the theta value from vision packets and does not involve odometry. Compare this to {@link DriveSubsystem#getPose()} for turning towards target*/
+    private Rotation2d headingTowardsGoal = null;
 
     public VisionOdometryUpdater(DriveSubsystem driveSubsystem) {
         _driveSubsystem = driveSubsystem;
@@ -77,6 +82,19 @@ public class VisionOdometryUpdater {
             setVisionStatus("Connected, no surroundings");
             return null;
         }
+        if (visionInstant.getSurroundings().size() == 1) {
+            resetSimilar();
+            setVisionStatus("Only one target visible");
+            return null;
+        }
+        {
+            // Here is where we do stuff with theta. This stuff doesn't deal with odometry, and it doesn't care if the readings are jumpy.
+            Rotation2d theta = visionInstant.getAverageTheta();
+            requireNonNull(theta, "Should not be null because there are surroundings!");
+            SmartDashboard.putNumber("Theta", theta.getDegrees());
+            headingTowardsGoal = _driveSubsystem.getPose().getRotation().plus(theta);
+        }
+
         Translation2d relativeGoalCenter = getRelativeGoalCenter(visionInstant);
         if (relativeGoalCenter == null) {
             resetSimilar();
@@ -111,5 +129,9 @@ public class VisionOdometryUpdater {
     private void setVisionStatus(String statusMessage){
         // do nothing now, could use this later and put something in Shuffleboard
         SmartDashboard.putString("Vision status", statusMessage);
+    }
+
+    public @Nullable Rotation2d getHeadingTowardsGoal() {
+        return headingTowardsGoal;
     }
 }
