@@ -165,8 +165,8 @@ public class RobotContainer {
     visionOff.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(CommandUtil.runWhenDisabled(new InstantCommand(() -> _drive.getVisionState().setEnabled(false))));
     releaseClimbHook.whenActive(() -> _climb.releaseHook()).whenInactive(() -> _climb.engageHook());
     _robotInput.getDriverControllerIndicate()
-        .whenActive(CommandUtil.runWhenDisabled(new InstantCommand(() -> _robotInput.getDriveRumble().setRumble(GenericHID.RumbleType.kRightRumble, 0.2))))
-        .whenInactive(CommandUtil.runWhenDisabled(new InstantCommand(() -> _robotInput.getDriveRumble().setRumble(GenericHID.RumbleType.kRightRumble, 0.0))));
+        .whenActive(CommandUtil.runWhenDisabled(new InstantCommand(() -> _robotInput.getDriveRumble().setRumble(GenericHID.RumbleType.kLeftRumble, 0.5))))
+        .whenInactive(CommandUtil.runWhenDisabled(new InstantCommand(() -> _robotInput.getDriveRumble().setRumble(GenericHID.RumbleType.kLeftRumble, 0.0))));
   }
 
   private void buildAutoCommands(HashMap<String, Trajectory> trajectories) {
@@ -177,9 +177,7 @@ public class RobotContainer {
     var keySet = trajectories.keySet();
 
     _autoChooser.setDefaultOption("do nothing", new DoNothing(_drive, _intake, _shooter));
-    _autoChooser.addOption("drive 1 meter", new DriveDistance(_drive, 1.0));
-    _autoChooser.addOption("drive 2 meters", new DriveDistance(_drive, 2.0));
-    _autoChooser.addOption("drive 3 meters", new DriveDistance(_drive, 3.0));
+    _autoChooser.addOption("leave tarmac", new DriveDistance(_drive, 1.3));
 
     for (var key : keySet) {
       _autoCommands.put(key,

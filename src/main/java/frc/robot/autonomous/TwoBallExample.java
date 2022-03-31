@@ -4,9 +4,11 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.commands.ShootFar;
 import frc.robot.subsystems.DriveSubsystem;
@@ -53,7 +55,9 @@ public class TwoBallExample extends SequentialCommandGroup {
           new InstantCommand(() -> _intake.intake(), _intake),
           ramseteCommand,
           new InstantCommand(() -> _drive.tankDriveVolts(0.0, 0.0), _drive),
+          new WaitCommand(0.5),
           new ShootFar(_shooter, _intake),
+          new WaitCommand(1.0),
           new ShootFar(_shooter, _intake)
         );
     }

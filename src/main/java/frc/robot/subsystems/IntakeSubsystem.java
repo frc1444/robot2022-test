@@ -59,7 +59,7 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         // Set a slight ramp on the index motors to let the ball coast a bit
         for (CANSparkMax spark : new CANSparkMax[] {_indexLower, _indexUpper }) {
-            spark.setOpenLoopRampRate(Constants.IntakeConstants.INDEX_RAMP_RATE);
+            //spark.setOpenLoopRampRate(Constants.IntakeConstants.INDEX_RAMP_RATE);
         }
         
 

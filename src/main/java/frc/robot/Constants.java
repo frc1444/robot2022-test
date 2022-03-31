@@ -77,7 +77,7 @@ public final class Constants {
         public static final int PORT_PS4_DRIVER = 0;
         public static final int PORT_PS4_OPERATOR = 4;
         /** The driver's controller that the driver station thinks is an Xbox controller. Can be used for rumble */
-        public static final int PORT_DRIVER_RUMBLE = 1;
+        public static final int PORT_DRIVER_RUMBLE = 2;
         /** The operator's controller that the driver station thinks is an Xbox controller. Can be used for rumble */
         public static final int PORT_OPERATOR_RUMBLE = 1;
     }
@@ -113,8 +113,8 @@ public final class Constants {
         public static final DoubleSolenoid.Value SHIFT_LOW = DoubleSolenoid.Value.kReverse;
         public static final DoubleSolenoid.Value SHIFT_HIGH = DoubleSolenoid.Value.kForward;
 
-        public static final double LOW_GEARING = 16.363;
-        public static final double HIGH_GEARING = 7.954;
+        public static final double LOW_GEARING = 15;
+        public static final double HIGH_GEARING = 7.292;
 
         public static final double VOLTS_FOR_COMPENSATION = 12.0;
 
@@ -128,13 +128,13 @@ public final class Constants {
             new DifferentialDriveKinematics(kTrackWidthMeters);
 
         /** These constants were determined using the WPILib sysid tool */
-        public static final double ksVolts = 0.64488;
-        public static final double kvVoltSecondsPerMeter = 3.4659;
-        public static final double kaVoltSecondsSquaredPerMeter = 0.35067;
-        public static final double kPDriveVel = 0.035411;
+        public static final double ksVolts = 0.62157;
+        public static final double kvVoltSecondsPerMeter = 3.2764;
+        public static final double kaVoltSecondsSquaredPerMeter = 0.18321;
+        public static final double kPDriveVel = 0.094378;
 
         public static final double kMaxSpeedMetersPerSecond = 3.0;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 3.0;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 2.0;
 
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;

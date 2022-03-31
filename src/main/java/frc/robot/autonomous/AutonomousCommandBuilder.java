@@ -20,7 +20,9 @@ public final class AutonomousCommandBuilder {
         CommandBase cmd;
 
         switch (name) {
-            case "oh_god_wtf":
+            case "two ball south":
+            case "two ball south west":
+            case "one ball":
                 cmd = new TwoBallExample(drive, intake, shooter, trajectory);
             break;
             
