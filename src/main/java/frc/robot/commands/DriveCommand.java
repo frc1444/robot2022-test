@@ -22,7 +22,7 @@ public class DriveCommand extends CommandBase {
         addRequirements(driveSubsystem);
         _driveSubsystem = driveSubsystem;
         _robotInput = robotInput;
-        rampController = new RampController(0.4, Constants.PERIOD);
+        rampController = new RampController(0.6, Constants.PERIOD);
         turnController = TurnToAngle.createPIDController();
     }
 

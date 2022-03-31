@@ -30,9 +30,11 @@ public class ShootClose extends CommandBase {
     @Override
     public void execute() {
         if (_shooter.isAtSetpoint()) {
-            Timer.delay(0.1);
+//            Timer.delay(0.1);
             _intake.feed();
 
+        } else {
+            _intake.stop(false);
         }
     }
 

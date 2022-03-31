@@ -72,7 +72,6 @@ public class DriveDistance extends SequentialCommandGroup {
           );
 
         addCommands(
-            new InstantCommand(() -> _drive.zeroHeading()),
             new InstantCommand(() -> _drive.resetOdometry(trajectory.getInitialPose())),
             ramsete
         );

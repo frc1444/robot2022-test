@@ -11,6 +11,8 @@ public class ShootFar extends CommandBase {
     private final ShooterSubsystem _shooter;
     private final IntakeSubsystem _intake;
 
+//    private Double firstShooterAtSetpoint = null;
+
     public ShootFar(ShooterSubsystem shooter, IntakeSubsystem intake) {
         _shooter = shooter;
         _intake = intake;
@@ -29,9 +31,24 @@ public class ShootFar extends CommandBase {
 
     @Override
     public void execute() {
+//        final boolean feed;
+//        if (_shooter.isAtSetpoint()) {
+//            double now = Timer.getFPGATimestamp();
+//            if (firstShooterAtSetpoint == null) {
+//                firstShooterAtSetpoint = now;
+//            }
+//            double timeAtSetpoint = now - firstShooterAtSetpoint;
+//            feed = timeAtSetpoint
+//            _intake.feed();
+//        } else {
+//            firstShooterAtSetpoint = null;
+//        }
         if (_shooter.isAtSetpoint()) {
-            Timer.delay(0.1);
+//            Timer.delay(0.1);
             _intake.feed();
+        } else {
+//            firstShooterAtSetpoint = null;
+            _intake.stop(false);
         }
     }
 

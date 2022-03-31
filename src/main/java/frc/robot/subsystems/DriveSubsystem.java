@@ -193,6 +193,7 @@ public class DriveSubsystem extends SubsystemBase {
         return (getLeftSensorPosition() + getRightSensorPosition()) / 2.0;
     }
 
+    @Deprecated
     public void zeroHeading() {
         _gyro.setYaw(0.0);
     }
