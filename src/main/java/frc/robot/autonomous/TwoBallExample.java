@@ -49,8 +49,8 @@ public class TwoBallExample extends SequentialCommandGroup {
           );
 
         addCommands(
-          new InstantCommand(() -> _drive.resetOdometry(trajectory.getInitialPose()), _drive),
           new InstantCommand(() -> _drive.zeroHeading(), _drive),
+          new InstantCommand(() -> _drive.resetOdometry(trajectory.getInitialPose()), _drive),
           new InstantCommand(() -> _intake.lowerIntake(), _intake),
           new InstantCommand(() -> _intake.intake(), _intake),
           ramseteCommand,
