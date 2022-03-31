@@ -9,17 +9,20 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotInput;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.util.RampController;
 
 public class DriveCommand extends CommandBase {
     private final DriveSubsystem _driveSubsystem;
     private final RobotInput _robotInput;
 
+    private final RampController rampController;
     private final PIDController turnController;
 
     public DriveCommand(DriveSubsystem driveSubsystem, RobotInput robotInput) {
         addRequirements(driveSubsystem);
         _driveSubsystem = driveSubsystem;
         _robotInput = robotInput;
+        rampController = new RampController(0.4, Constants.PERIOD);
         turnController = TurnToAngle.createPIDController();
     }
 
@@ -30,6 +33,7 @@ public class DriveCommand extends CommandBase {
 
     @Override
     public void initialize() {
+        rampController.reset();
         turnController.reset();
     }
 
@@ -56,6 +60,8 @@ public class DriveCommand extends CommandBase {
             steer = _robotInput.getSteer();
         }
         SmartDashboard.putNumber("steer", steer);
-        _driveSubsystem.curvatureDrive(_robotInput.getForward(), steer);
+//        _driveSubsystem.curvatureDrive(_robotInput.getForward(), steer);
+        rampController.updateWithDesired(_robotInput.getForward());
+        _driveSubsystem.curvatureDrive(rampController.getSetpoint(), steer);
     }
 }
