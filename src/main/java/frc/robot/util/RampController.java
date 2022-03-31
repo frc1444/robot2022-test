@@ -23,7 +23,7 @@ public class RampController {
     public void updateWithDesired(double desiredSetpoint) {
         desiredSetpoint = MathUtil.clamp(desiredSetpoint, -1.0, 1.0);
         double difference = desiredSetpoint - setpoint;
-        double toAdd = period * rampRate;
+        double toAdd = period / rampRate;
         if (Math.abs(difference) < toAdd) {
             setpoint = desiredSetpoint;
             return;
