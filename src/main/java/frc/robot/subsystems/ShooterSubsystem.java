@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
 import frc.robot.util.FalconVelocityConverter;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -8,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import org.jetbrains.annotations.Nullable;
 
 public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX _shooter;
@@ -15,6 +17,8 @@ public class ShooterSubsystem extends SubsystemBase {
     private final DoubleSolenoid _hoodSolenoid;
     private double _shooterSetpoint;
 
+
+    private @Nullable Double firstShooterAtSetpoint = null;
 
 
     public ShooterSubsystem(DoubleSolenoid hoodSolenoid) {
@@ -46,6 +50,15 @@ public class ShooterSubsystem extends SubsystemBase {
         if (DriverStation.isDisabled()) {
             update(0.0);
         }
+
+        if (isAtSetpoint()) {
+            double now = Timer.getFPGATimestamp();
+            if (firstShooterAtSetpoint == null) {
+                firstShooterAtSetpoint = now;
+            }
+        } else {
+            firstShooterAtSetpoint = null;
+        }
     }
 
     public void update(double speed) {
@@ -75,6 +88,15 @@ public class ShooterSubsystem extends SubsystemBase {
     public boolean isAtSetpoint() {
         var rpmError = Math.abs(_shooter.getSelectedSensorVelocity() - _shooterSetpoint);
         return rpmError < Constants.ShooterConstants.SHOOTER_ERROR_LIMIT;
+    }
+    public boolean isAtSetpointFor(double timeSeconds) {
+        double now = Timer.getFPGATimestamp();
+        Double firstShooterAtSetpoint = this.firstShooterAtSetpoint;
+        if (firstShooterAtSetpoint == null) {
+            return false;
+        }
+        double timeAtSetpoint = now - firstShooterAtSetpoint;
+        return timeAtSetpoint >= timeSeconds;
     }
 
     public double getSetpoint() {

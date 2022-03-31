@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -11,7 +10,6 @@ public class ShootFar extends CommandBase {
     private final ShooterSubsystem _shooter;
     private final IntakeSubsystem _intake;
 
-//    private Double firstShooterAtSetpoint = null;
 
     public ShootFar(ShooterSubsystem shooter, IntakeSubsystem intake) {
         _shooter = shooter;
@@ -31,23 +29,9 @@ public class ShootFar extends CommandBase {
 
     @Override
     public void execute() {
-//        final boolean feed;
-//        if (_shooter.isAtSetpoint()) {
-//            double now = Timer.getFPGATimestamp();
-//            if (firstShooterAtSetpoint == null) {
-//                firstShooterAtSetpoint = now;
-//            }
-//            double timeAtSetpoint = now - firstShooterAtSetpoint;
-//            feed = timeAtSetpoint
-//            _intake.feed();
-//        } else {
-//            firstShooterAtSetpoint = null;
-//        }
-        if (_shooter.isAtSetpoint()) {
-//            Timer.delay(0.1);
+        if (_shooter.isAtSetpointFor(0.2)) {
             _intake.feed();
         } else {
-//            firstShooterAtSetpoint = null;
             _intake.stop(false);
         }
     }
