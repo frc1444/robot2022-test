@@ -77,9 +77,9 @@ public final class Constants {
         public static final int PORT_PS4_DRIVER = 0;
         public static final int PORT_PS4_OPERATOR = 4;
         /** The driver's controller that the driver station thinks is an Xbox controller. Can be used for rumble */
-        public static final int PORT_DRIVER_RUMBLE = 2;
+        public static final int PORT_DRIVER_RUMBLE = 1;
         /** The operator's controller that the driver station thinks is an Xbox controller. Can be used for rumble */
-        public static final int PORT_OPERATOR_RUMBLE = 1;
+        public static final int PORT_OPERATOR_RUMBLE = 5;
     }
 
     public static final class DigitalIO {
@@ -133,8 +133,8 @@ public final class Constants {
         public static final double kaVoltSecondsSquaredPerMeter = 0.18321;
         public static final double kPDriveVel = 0.094378;
 
-        public static final double kMaxSpeedMetersPerSecond = 3.0;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 2.0;
+        public static final double kMaxSpeedMetersPerSecond = 1.0;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 1.0;
 
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
@@ -154,16 +154,16 @@ public final class Constants {
         public static final double SHOOT_CLOSE_SPEED = -0.40;
 
         /** Shooter speed for far shots */
-        public static final double SHOOT_FAR_SPEED = -0.40;
+        public static final double SHOOT_FAR_SPEED = -0.85;
 
         public static final double HOOD_KP = 0.06;
         public static final double HOOD_KF = 0.02;
         public static final double HOOD_KI = 0.0;
         public static final double HOOD_KD = 0.0;
 
-        public static final double HOOD_SETPOINT = -1.0;
+        public static final double HOOD_SETPOINT = -.7;
 
-        public static final DoubleSolenoid.Value HOOD_LOW = DoubleSolenoid.Value.kForward;
+        public static final DoubleSolenoid.Value HOOD_LOW = DoubleSolenoid.Value.kReverse;
         public static final DoubleSolenoid.Value HOOD_HIGH = DoubleSolenoid.Value.kReverse;
     }
 

@@ -91,9 +91,9 @@ public class RobotContainer {
     
     _drive.setDefaultCommand(new DriveCommand(_drive, _robotInput));
 
-    _intake.setDefaultCommand(
-      new RunCommand(() -> _intake.update()
-      , _intake));
+    // _intake.setDefaultCommand(
+      // new RunCommand(() -> _intake.update()
+      // , _intake));
 
     _climb.setDefaultCommand(new RunCommand(() -> {
         _climb.update(_robotInput.getClimbStage1(), _robotInput.getClimbStage2());
@@ -148,12 +148,14 @@ public class RobotContainer {
     raiseIntakeTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intake.raiseIntake());
     lowerIntakeTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _intake.lowerIntake());
     stopTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(new Stop(_shooter, _intake));
+    /*
     shooterSpinUpTrigger.debounce(Constants.INPUT_DEBOUNCE).whenActive(
       () -> _shooter.update(Constants.ShooterConstants.SHOOT_FAR_SPEED)
     );
     shooterSpinDownTrigger.debounce(Constants.INPUT_DEBOUNCE).whenActive(
       () -> _shooter.update(0.0)
     );
+    */
 
     shiftHighTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _drive.shiftHigh());
     shiftLowTrigger.debounce(Constants.INPUT_DEBOUNCE, DebounceType.kBoth).whenActive(() -> _drive.shiftLow());
@@ -177,7 +179,7 @@ public class RobotContainer {
     var keySet = trajectories.keySet();
 
     _autoChooser.setDefaultOption("do nothing", new DoNothing(_drive, _intake, _shooter));
-    _autoChooser.addOption("leave tarmac", new DriveDistance(_drive, 1.3));
+    _autoChooser.addOption("leave tarmac", new DriveDistance(_drive, 2));
 
     for (var key : keySet) {
       _autoCommands.put(key,

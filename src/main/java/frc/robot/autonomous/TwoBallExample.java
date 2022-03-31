@@ -54,10 +54,11 @@ public class TwoBallExample extends SequentialCommandGroup {
           new InstantCommand(() -> _intake.lowerIntake(), _intake),
           new InstantCommand(() -> _intake.intake(), _intake),
           ramseteCommand,
+          new InstantCommand(() -> _intake.stop(false), _intake),
           new InstantCommand(() -> _drive.tankDriveVolts(0.0, 0.0), _drive),
-          new WaitCommand(0.5),
+          //new WaitCommand(0.5),
           new ShootFar(_shooter, _intake),
-          new WaitCommand(1.0),
+          //new WaitCommand(1.0),
           new ShootFar(_shooter, _intake)
         );
     }

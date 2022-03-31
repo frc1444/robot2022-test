@@ -84,9 +84,10 @@ public class IntakeSubsystem extends SubsystemBase {
         if (DriverStation.isDisabled()) {
             stop(false);
         }
+        update();
     }
 
-    public void update() {
+    private void update() {
         switch (_currentState) {
             case Idle:
                 this.idle();
@@ -224,7 +225,7 @@ public class IntakeSubsystem extends SubsystemBase {
         }
 
         if (_previousUpperSensorState == _currentUpperSensorState) {
-            _indexUpper.set(IntakeControl.Upper_Index_Intake);
+            _indexUpper.set(IntakeControl.Upper_Index_Feed);
         } else {
             _indexUpper.set(IntakeControl.Stop);
             _wasBallFed = true;
