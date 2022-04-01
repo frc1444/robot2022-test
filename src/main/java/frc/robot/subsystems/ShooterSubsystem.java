@@ -86,8 +86,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public boolean isAtSetpoint() {
-        var rpmError = Math.abs(_shooter.getSelectedSensorVelocity() - _shooterSetpoint);
-        return rpmError < Constants.ShooterConstants.SHOOTER_ERROR_LIMIT;
+        return Math.abs(_shooter.getSelectedSensorVelocity() - Constants.ShooterConstants.SHOOTER_ERROR_LIMIT) > Math.abs(_shooterSetpoint);
     }
     public boolean isAtSetpointFor(double timeSeconds) {
         double now = Timer.getFPGATimestamp();

@@ -25,6 +25,9 @@ public final class AutonomousCommandBuilder {
             case "one ball":
                 cmd = new TwoBallExample(drive, intake, shooter, trajectory);
             break;
+            case "one ball low":
+                cmd = new OneBallLow(drive, intake, shooter, trajectory);
+            break;
             
             case "do nothing":
                 cmd = new DoNothing(drive, intake, shooter);

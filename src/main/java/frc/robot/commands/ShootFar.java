@@ -29,10 +29,10 @@ public class ShootFar extends CommandBase {
 
     @Override
     public void execute() {
-        if (_shooter.isAtSetpointFor(0.2)) {
+        if (_shooter.isAtSetpointFor(0.5)) {
             _intake.feed();
         } else {
-            _intake.stop(false);
+            _intake.setStopState(false);
         }
     }
 

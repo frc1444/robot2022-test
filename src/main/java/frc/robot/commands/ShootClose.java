@@ -32,14 +32,14 @@ public class ShootClose extends CommandBase {
         if (_shooter.isAtSetpointFor(0.1)) {
             _intake.feed();
         } else {
-            _intake.stop(false);
+            _intake.setStopState(false);
         }
     }
 
     @Override
     public void end(boolean interrupted) {
         _shooter.update(0.0);
-        _intake.stop(false);
+       // _intake.stop(false);
     }
 
     @Override

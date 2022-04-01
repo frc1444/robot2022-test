@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import frc.robot.util.FalconVelocityConverter;
 
 public final class Constants {
     private Constants() { throw new UnsupportedOperationException(); }
@@ -148,20 +149,20 @@ public final class Constants {
         public static final double SHOOTER_KI = 0.00005;
         public static final double SHOOTER_KD = 0.1;
         public static final double SHOOTER_RAMP_RATE = 0.4;        
-        public static final double SHOOTER_ERROR_LIMIT = 200;
+        public static final double SHOOTER_ERROR_LIMIT = FalconVelocityConverter.rpmToVelocity(200);
 
         /** Shooter speed for close shots */
-        public static final double SHOOT_CLOSE_SPEED = -0.40;
+        public static final double SHOOT_CLOSE_SPEED = -0.35;
 
         /** Shooter speed for far shots */
-        public static final double SHOOT_FAR_SPEED = -0.85;
+        public static final double SHOOT_FAR_SPEED = -0.80;
 
         public static final double HOOD_KP = 0.06;
         public static final double HOOD_KF = 0.02;
         public static final double HOOD_KI = 0.0;
         public static final double HOOD_KD = 0.0;
 
-        public static final double HOOD_SETPOINT = -.7;
+        public static final double HOOD_SETPOINT = -.6;
 
         public static final DoubleSolenoid.Value HOOD_LOW = DoubleSolenoid.Value.kReverse;
         public static final DoubleSolenoid.Value HOOD_HIGH = DoubleSolenoid.Value.kReverse;

@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -28,6 +29,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private IntakeStates _currentState;
 
+
+    private Double firstUpperSensorNotSenseTime = null;
 
     public IntakeSubsystem(DoubleSolenoid intakeSolenoid) {
         _intake = new CANSparkMax(Constants.CanIds.INTAKE, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -143,6 +146,10 @@ public class IntakeSubsystem extends SubsystemBase {
         _indexLower.set(IntakeControl.Stop);
         _indexUpper.set(IntakeControl.Stop);
 
+        _currentState = keepStopped ? IntakeStates.Stop : IntakeStates.Idle;
+    }
+
+    public void setStopState(boolean keepStopped) {
         _currentState = keepStopped ? IntakeStates.Stop : IntakeStates.Idle;
     }
 
@@ -269,6 +276,16 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     private boolean upperBallPresent() {
-        return !_upperBallSensor.get();
+        boolean sensed = !_upperBallSensor.get();
+        if (!sensed) {
+            double now = Timer.getFPGATimestamp();
+            if (firstUpperSensorNotSenseTime == null) {
+                firstUpperSensorNotSenseTime = now;
+            }
+            double timeNotSensed = now - firstUpperSensorNotSenseTime;
+            return !(timeNotSensed >= 0.1);
+        }
+        firstUpperSensorNotSenseTime = null;
+        return true;
     }
 }
