@@ -178,7 +178,7 @@ public final class Constants {
         public static final double MAX_SPEED_STAGE_FIRST = 1.0;
         public static final double MAX_SPEED_STAGE_SECOND = 1.0;
         public static final double MAX_SPEED_STAGE_FIRST_REVERSE = 0.5;
-        public static final double MAX_SPEED_STAGE_SECOND_REVERSE = 0.2;
+        public static final double MAX_SPEED_STAGE_SECOND_REVERSE = 0.5;
     }
     public static final class FieldConstants {
         public static final Translation2d GOAL_CENTER = new Translation2d(0.0, 0.0);
