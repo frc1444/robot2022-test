@@ -155,16 +155,16 @@ public final class Constants {
         public static final double SHOOT_CLOSE_SPEED = -0.35;
 
         /** Shooter speed for far shots */
-        public static final double SHOOT_FAR_SPEED = -0.80;
+        public static final double SHOOT_FAR_SPEED = -.8;
 
         public static final double HOOD_KP = 0.06;
         public static final double HOOD_KF = 0.02;
         public static final double HOOD_KI = 0.0;
         public static final double HOOD_KD = 0.0;
 
-        public static final double HOOD_SETPOINT = -.6;
+        public static final double HOOD_SETPOINT = -0.0;
 
-        public static final DoubleSolenoid.Value HOOD_LOW = DoubleSolenoid.Value.kReverse;
+        public static final DoubleSolenoid.Value HOOD_LOW = DoubleSolenoid.Value.kForward;
         public static final DoubleSolenoid.Value HOOD_HIGH = DoubleSolenoid.Value.kReverse;
     }
 

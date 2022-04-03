@@ -22,14 +22,14 @@ public class ShootFar extends CommandBase {
 
     @Override
     public void initialize() {
-        _shooter.setHoodLow();
+        _shooter.setHoodHigh();
         _shooter.update(ShooterConstants.SHOOT_FAR_SPEED);
         _intake.clearBallFed();
     }
 
     @Override
     public void execute() {
-        if (_shooter.isAtSetpointFor(0.5)) {
+        if (_shooter.isAtSetpointFor(1.0)) {
             _intake.feed();
         } else {
             _intake.setStopState(false);
@@ -39,7 +39,7 @@ public class ShootFar extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         _shooter.update(0.0);
-        _intake.stop(false);
+        //_intake.stop(false);
     }
 
     @Override
